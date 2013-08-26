@@ -12,11 +12,9 @@
   | obtain it through the world-wide-web, please send a note to          |
   | license@php.net so we can mail you a copy immediately.               |
   +----------------------------------------------------------------------+
-  | Author:                                                              |
+  | Author: Johann Zelger <jz@techdivision.com                           |
   +----------------------------------------------------------------------+
 */
-
-/* $Id$ */
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -42,25 +40,15 @@
 
 ZEND_DECLARE_MODULE_GLOBALS(appserver)
 
-/* True global resources - no need for thread safety here */
 static int le_appserver;
 
 int (*appserver_orig_header_handler)(sapi_header_struct *h AS_SAPI_HEADER_OP_DC, sapi_headers_struct *s TSRMLS_DC);
 
-/* {{{ appserver_functions[]
- *
- * Every user visible function must have an entry in appserver_functions[].
- */
 const zend_function_entry appserver_functions[] = {
 	PHP_FE(appserver_get_headers, NULL)
-	PHP_FE(exit, NULL)
-	PHP_FE(die, NULL)
-	PHP_FE_END	/* Must be the last line in appserver_functions[] */
+	PHP_FE_END
 };
-/* }}} */
 
-/* {{{ appserver_module_entry
- */
 zend_module_entry appserver_module_entry = {
 #if ZEND_MODULE_API_NO >= 20010901
 	STANDARD_MODULE_HEADER,
@@ -69,56 +57,51 @@ zend_module_entry appserver_module_entry = {
 	appserver_functions,
 	PHP_MINIT(appserver),
 	PHP_MSHUTDOWN(appserver),
-	PHP_RINIT(appserver),		/* Replace with NULL if there's nothing to do at request start */
-	PHP_RSHUTDOWN(appserver),	/* Replace with NULL if there's nothing to do at request end */
+	PHP_RINIT(appserver),
+	PHP_RSHUTDOWN(appserver),
 	PHP_MINFO(appserver),
 #if ZEND_MODULE_API_NO >= 20010901
-	"0.1", /* Replace with version number for your extension */
+	APPSERVER_VERSION,
 #endif
 	STANDARD_MODULE_PROPERTIES
 };
-/* }}} */
-
 
 #ifdef COMPILE_DL_APPSERVER
 ZEND_GET_MODULE(appserver)
 #endif
 
-/* {{{ PHP_INI
- */
-/* Remove comments and fill if you need to have entries in php.ini
-PHP_INI_BEGIN()
-    STD_PHP_INI_ENTRY("appserver.global_value",      "42", PHP_INI_ALL, OnUpdateLong, global_value, zend_appserver_globals, appserver_globals)
-    STD_PHP_INI_ENTRY("appserver.global_string", "foobar", PHP_INI_ALL, OnUpdateString, global_string, zend_appserver_globals, appserver_globals)
-PHP_INI_END()
-*/
-/* }}} */
 
-/* {{{ php_appserver_init_globals
- */
-static void php_appserver_init_globals(zend_appserver_globals *appserver_globals)
+#if PHP_VERSION_ID >= 50300
+static void appserver_header_remove_with_prefix(appserver_llist *headers, char *prefix, int prefix_len TSRMLS_DC)
 {
+	appserver_llist_element *le;
+	char                 *header;
 
-}
-/* }}} */
+	for (le = APPSERVER_LLIST_HEAD(APPSERVER_GLOBALS(headers)); le != NULL;) {
+		header = APPSERVER_LLIST_VALP(le);
 
-static void appserver_llist_string_dtor(void *dummy, void *elem)
-{
-	char *s = elem;
+		if ((strlen(header) > prefix_len + 1) && (header[prefix_len] == ':') && (strncasecmp(header, prefix, prefix_len) == 0)) {
+			appserver_llist_element *current = le;
 
-	if (s) {
-		free(s);
+			le = APPSERVER_LLIST_NEXT(le);
+			appserver_llist_remove(headers, current, NULL);
+		} else {
+			le = APPSERVER_LLIST_NEXT(le);
+		}
 	}
 }
+#endif
 
 static int appserver_header_handler(sapi_header_struct *h AS_SAPI_HEADER_OP_DC, sapi_headers_struct *s TSRMLS_DC)
 {
 
+	if (APPSERVER_GLOBALS(headers)) {
 #if PHP_VERSION_ID >= 50300
 		switch (op) {
 			case SAPI_HEADER_ADD:
 				appserver_llist_insert_next(APPSERVER_GLOBALS(headers), APPSERVER_LLIST_TAIL(APPSERVER_GLOBALS(headers)), strdup(h->header));
 				break;
+
 			case SAPI_HEADER_REPLACE: {
 				char *colon_offset = strchr(h->header, ':');
 
@@ -131,10 +114,16 @@ static int appserver_header_handler(sapi_header_struct *h AS_SAPI_HEADER_OP_DC, 
 				}
 
 				appserver_llist_insert_next(APPSERVER_GLOBALS(headers), APPSERVER_LLIST_TAIL(APPSERVER_GLOBALS(headers)), strdup(h->header));
-			} break;
+				}
+				break;
+
 			case SAPI_HEADER_DELETE_ALL:
 				appserver_llist_empty(APPSERVER_GLOBALS(headers), NULL);
+				break;
+
 			case SAPI_HEADER_DELETE:
+				break;
+
 			case SAPI_HEADER_SET_STATUS:
 				break;
 
@@ -142,6 +131,7 @@ static int appserver_header_handler(sapi_header_struct *h AS_SAPI_HEADER_OP_DC, 
 #else
 		appserver_llist_insert_next(APPSERVER_GLOBALS(headers), APPSERVER_LLIST_TAIL(APPSERVER_GLOBALS(headers)), strdup(h->header));
 #endif
+	}
 
 	if (appserver_orig_header_handler) {
 		return appserver_orig_header_handler(h AS_SAPI_HEADER_OP_CC, s TSRMLS_CC);
@@ -150,17 +140,13 @@ static int appserver_header_handler(sapi_header_struct *h AS_SAPI_HEADER_OP_DC, 
 	return SAPI_HEADER_ADD;
 }
 
-/* {{{ PHP_MINIT_FUNCTION
- */
-PHP_MINIT_FUNCTION(appserver)
+static void php_appserver_shutdown_globals (zend_appserver_globals *appserver_globals TSRMLS_DC)
 {
-	/* If you have INI entries, uncomment these lines
-	REGISTER_INI_ENTRIES();
-	*/
 
-	//APPSERVER_GLOBALS(headers) = appserver_llist_alloc(appserver_llist_string_dtor);
+}
 
-
+static void php_appserver_init_globals(zend_appserver_globals *appserver_globals)
+{
 
 	/* Override header generation in SAPI */
 	if (sapi_module.header_handler != appserver_header_handler) {
@@ -168,41 +154,57 @@ PHP_MINIT_FUNCTION(appserver)
 		sapi_module.header_handler = appserver_header_handler;
 	}
 
-	return SUCCESS;
-}
-/* }}} */
+	appserver_globals->headers = NULL;
 
-/* {{{ PHP_MSHUTDOWN_FUNCTION
- */
+}
+
+static void appserver_llist_string_dtor(void *dummy, void *elem)
+{
+	char *s = elem;
+
+	if (s) {
+		free(s);
+	}
+}
+
 PHP_MSHUTDOWN_FUNCTION(appserver)
 {
 	/* uncomment this line if you have INI entries
 	UNREGISTER_INI_ENTRIES();
 	*/
+
+#ifdef ZTS
+	ts_free_id(appserver_globals_id);
+#else
+	php_appserver_shutdown_globals(&appserver_globals TSRMLS_CC);
+#endif
+
 	return SUCCESS;
 }
-/* }}} */
 
-/* Remove if there's nothing to do at request start */
-/* {{{ PHP_RINIT_FUNCTION
- */
+PHP_MINIT_FUNCTION(appserver)
+{
+	/* If you have INI entries, uncomment these lines
+	REGISTER_INI_ENTRIES();
+	*/
+	ZEND_INIT_MODULE_GLOBALS(appserver, php_appserver_init_globals, php_appserver_shutdown_globals);
+
+	return SUCCESS;
+}
+
 PHP_RINIT_FUNCTION(appserver)
 {
+
+	APPSERVER_GLOBALS(headers) = appserver_llist_alloc(appserver_llist_string_dtor);
+
 	return SUCCESS;
 }
-/* }}} */
 
-/* Remove if there's nothing to do at request end */
-/* {{{ PHP_RSHUTDOWN_FUNCTION
- */
 PHP_RSHUTDOWN_FUNCTION(appserver)
 {
 	return SUCCESS;
 }
-/* }}} */
 
-/* {{{ PHP_MINFO_FUNCTION
- */
 PHP_MINFO_FUNCTION(appserver)
 {
 	php_info_print_table_start();
@@ -213,10 +215,7 @@ PHP_MINFO_FUNCTION(appserver)
 	DISPLAY_INI_ENTRIES();
 	*/
 }
-/* }}} */
 
-/* {{{ proto void appserver_get_headers(void)
-*   Print a message to show how much PHP extensions rock */
 PHP_FUNCTION(appserver_get_headers)
 {
 	appserver_llist_element *le;
@@ -229,25 +228,51 @@ PHP_FUNCTION(appserver_get_headers)
 	}
 }
 
-
-/* }}} */
-
-/* {{{ proto void exit(void)
-*   Print a message to show how much PHP extensions rock */
-PHP_FUNCTION(exit)
+// ---------------------------------------------------------------------------
+// Zend Extension Functions
+// ---------------------------------------------------------------------------
+ZEND_DLEXPORT void onStatement(zend_op_array *op_array)
 {
-    php_printf("exit");
+	TSRMLS_FETCH();
 }
-/* }}} */
 
-/* {{{ proto void die(void)
-*   Print a message to show how much PHP extensions rock */
-PHP_FUNCTION(die)
+int appserver_zend_startup(zend_extension *extension)
 {
-    php_printf("die");
+	TSRMLS_FETCH();
+	CG(compiler_options) |= ZEND_COMPILE_EXTENDED_INFO;
+	return zend_startup_module(&appserver_module_entry);
 }
-/* }}} */
 
+ZEND_DLEXPORT void appserver_zend_shutdown(zend_extension *extension)
+{
+
+}
+
+#ifndef ZEND_EXT_API
+#define ZEND_EXT_API	ZEND_DLEXPORT
+#endif
+ZEND_EXTENSION();
+
+ZEND_DLEXPORT zend_extension zend_extension_entry = {
+	"Application Server (appserver)",
+	APPSERVER_VERSION,
+	"TechDivision GmbH",
+	"http://appserver.io/",
+	"",
+	appserver_zend_startup,
+	appserver_zend_shutdown,
+	NULL,	  		// activate_func_t
+	NULL,	   		// deactivate_func_t
+	NULL,	   		// message_handler_func_t
+	NULL,	   		// op_array_handler_func_t
+	onStatement, 	// statement_handler_func_t
+	NULL,   		// fcall_begin_handler_func_t
+	NULL,   		// fcall_end_handler_func_t
+	NULL,	   		// op_array_ctor_func_t
+	NULL,	   		// op_array_dtor_func_t
+	NULL,	   		// api_no_check
+	COMPAT_ZEND_EXTENSION_PROPERTIES
+};
 
 /*
  * Local variables:

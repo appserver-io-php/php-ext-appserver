@@ -12,17 +12,17 @@
   | obtain it through the world-wide-web, please send a note to          |
   | license@php.net so we can mail you a copy immediately.               |
   +----------------------------------------------------------------------+
-  | Author:                                                              |
+  | Author: Johann Zelger <jz@techdivision.com                           |
   +----------------------------------------------------------------------+
 */
-
-/* $Id$ */
 
 #ifndef PHP_APPSERVER_H
 #define PHP_APPSERVER_H
 
 extern zend_module_entry appserver_module_entry;
 #define phpext_appserver_ptr &appserver_module_entry
+
+#define APPSERVER_VERSION "0.1"
 
 #ifdef PHP_WIN32
 #	define PHP_APPSERVER_API __declspec(dllexport)
@@ -42,6 +42,7 @@ extern zend_module_entry appserver_module_entry;
 
 #include "php.h"
 #include "main/SAPI.h"
+#include "appserver_llist.h"
 
 #include "zend.h"
 #include "zend_API.h"
@@ -49,11 +50,9 @@ extern zend_module_entry appserver_module_entry;
 #include "zend_compile.h"
 #include "zend_extensions.h"
 
-#include "appserver_llist.h"
 #ifdef ZTS
 #include "TSRM.h"
 #endif
-
 
 PHP_MINIT_FUNCTION(appserver);
 PHP_MSHUTDOWN_FUNCTION(appserver);
@@ -62,17 +61,13 @@ PHP_RSHUTDOWN_FUNCTION(appserver);
 PHP_MINFO_FUNCTION(appserver);
 
 PHP_FUNCTION(appserver_get_headers);
-PHP_FUNCTION(exit);
-PHP_FUNCTION(die);
 
 ZEND_BEGIN_MODULE_GLOBALS(appserver)
-
-	/* headers */
 	appserver_llist *headers;
-
+	long 			pproftrace;
 ZEND_END_MODULE_GLOBALS(appserver)
 
-PHPAPI ZEND_EXTERN_MODULE_GLOBALS(appserver)
+PHPAPI ZEND_EXTERN_MODULE_GLOBALS(apd)
 
 #ifdef ZTS
 #define APPSERVER_GLOBALS(v) TSRMG(appserver_globals_id, zend_appserver_globals *, v)
@@ -80,18 +75,7 @@ PHPAPI ZEND_EXTERN_MODULE_GLOBALS(appserver)
 #define APPSERVER_GLOBALS(v) (appserver_globals.v)
 #endif
 
-/* In every utility function you add that needs to use variables 
-   in php_appserver_globals, call TSRMLS_FETCH(); after declaring other 
-   variables used by that function, or better yet, pass in TSRMLS_CC
-   after the last function argument and declare your utility function
-   with TSRMLS_DC after the last declared argument.  Always refer to
-   the globals in your function as APPSERVER_G(variable).  You are 
-   encouraged to rename these macros something shorter, see
-   examples in any other php module directory.
-*/
-
 #endif	/* PHP_APPSERVER_H */
-
 
 /*
  * Local variables:

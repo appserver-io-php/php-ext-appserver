@@ -21,9 +21,11 @@ if (extension_loaded($module)) {
 echo "$str\n";
 */
 
-appserver_get_headers();
-exit();
-die();
+header('X-Powered-By: appserver');
+header('Location: http://www.google.de');
+
+echo var_export(appserver_get_headers(), true);
+
 echo PHP_EOL . "finished." . PHP_EOL;
 
 
