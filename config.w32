@@ -1,0 +1,13 @@
+// $Id$
+// vim:ft=javascript
+
+// If your extension references something external, use ARG_WITH
+// ARG_WITH("appserver", "for appserver support", "no");
+
+// Otherwise, use ARG_ENABLE
+// ARG_ENABLE("appserver", "enable appserver support", "no");
+
+if (PHP_APPSERVER != "no") {
+	EXTENSION("appserver", "appserver.c");
+}
+
