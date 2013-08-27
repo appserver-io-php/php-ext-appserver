@@ -22,7 +22,7 @@
 extern zend_module_entry appserver_module_entry;
 #define phpext_appserver_ptr &appserver_module_entry
 
-#define APPSERVER_VERSION "0.1"
+#define APPSERVER_VERSION "0.1.0"
 
 #ifdef PHP_WIN32
 #	define PHP_APPSERVER_API __declspec(dllexport)
