@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE package SYSTEM "http://pear.php.net/dtd/package-1.0">
+<package version="1.0">
+  <name>appserver</name>
+  <summary>Provides functionality for usage in appserver</summary>
+  <description>Parts of the appserver will written in C so this extension provides the base to adapt more and more php functionality into c later on.</description>
+  <maintainers>
+    <maintainer>
+      <user>zelgerj</user>
+      <name>Johann Zelger</name>
+      <email>jz@techdivision.com</email>
+      <role>lead</role>
+    </maintainer>
+  </maintainers>
+  <release>
+    <version>0.1.0</version>
+    <date>2013-08-27</date>
+    <license>PHP License</license>
+    <state>beta</state>
+    <notes>initial release</notes>
+    <deps>
+      <dep type="php" rel="ge" version="5.5.0"/>
+    </deps>
+    <filelist>
+      <file role="doc" name="LICENSE"/>
+      <file role="doc" name="EXPERIMENTAL"/>
+      <file role="src" name="CREDITS"/>
+      <file role="src" name="appserver.c"/>
+      <file role="src" name="php_appserver.h"/>
+      <file role="src" name="appserver_llist.c"/>
+      <file role="src" name="appserver_llist.h"/>
+      <file role="src" name="appserver_llist.h"/>
+      
+    </filelist>
+  </release>
+  <changelog>
+    <release>
+      <version>0.1.0</version>
+      <date>2013-08-27</date>
+      <state>beta</state>
+      <notes>initial release</notes>
+    </release>
+  </changelog>
+</package>
