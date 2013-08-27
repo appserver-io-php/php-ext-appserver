@@ -29,3 +29,5 @@
 /mkinstalldirs
 /modules
 /run-tests.php
+/appserver-*.tgz
+/.idea

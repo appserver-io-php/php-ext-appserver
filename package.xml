@@ -32,6 +32,7 @@ xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0 http://pear.php.net/dtd/ta
         <file name="config.m4" role="src" />
         <file name="config.w32" role="src" />
         <file name="CREDITS" role="doc" />
+        <file name="EXPERIMENTAL" role="doc" />
         <file name="LICENSE" role="doc" />
         <file name="README" role="doc" />
         <file name="appserver.c" role="src" />
