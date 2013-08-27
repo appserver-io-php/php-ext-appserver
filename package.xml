@@ -22,16 +22,16 @@
       <dep type="php" rel="ge" version="5.5.0"/>
     </deps>
     <filelist>
-      <file role="doc" name="../LICENSE"/>
-      <file role="doc" name="../EXPERIMENTAL"/>
-      <file role="src" name="../CREDITS"/>
-      <file role="src" name="../appserver.c"/>
-      <file role="src" name="../php_appserver.h"/>
-      <file role="src" name="../appserver_llist.c"/>
-      <file role="src" name="../appserver_llist.h"/>
-      <file role="src" name="../appserver_llist.h"/>
-      <file role="src" name="../config.m4"/>
-      <file role="src" name="../config.w32"/>     
+      <file role="doc" name="LICENSE"/>
+      <file role="doc" name="EXPERIMENTAL"/>
+      <file role="src" name="CREDITS"/>
+      <file role="src" name="appserver.c"/>
+      <file role="src" name="php_appserver.h"/>
+      <file role="src" name="appserver_llist.c"/>
+      <file role="src" name="appserver_llist.h"/>
+      <file role="src" name="appserver_llist.h"/>
+      <file role="src" name="config.m4"/>
+      <file role="src" name="config.w32"/>     
     </filelist>
   </release>
   <changelog>
