@@ -5,9 +5,9 @@
 // ARG_WITH("appserver", "for appserver support", "no");
 
 // Otherwise, use ARG_ENABLE
-// ARG_ENABLE("appserver", "enable appserver support", "no");
+ARG_ENABLE("appserver", "enable appserver support", "no");
 
 if (PHP_APPSERVER != "no") {
-	EXTENSION("appserver", "appserver.c");
+	EXTENSION("appserver", "appserver.c appserver_llist.c");
 }
 
