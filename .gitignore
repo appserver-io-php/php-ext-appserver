@@ -1,5 +1,7 @@
 /.cproject
 /.project
+/.settings
 /.idea
 /build
 /target
+/build.properties
