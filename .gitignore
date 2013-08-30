@@ -31,3 +31,4 @@
 /run-tests.php
 /appserver-*.tgz
 /.idea
+/target
