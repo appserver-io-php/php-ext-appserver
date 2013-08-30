@@ -5,7 +5,7 @@
 
     <property name="c-src.dir" value="${basedir}/src" />
     <property name="c-build.dir" value="${basedir}/build" />
-	<property name="c-target.dir" value="${basedir}/target" />
+    <property name="c-target.dir" value="${basedir}/target" />
 
     <property file="${user.home}/build.properties"/>
     <property file="${basedir}/build.properties"/>
@@ -13,22 +13,22 @@
     <property file="${basedir}/build.${os.family}.properties"/>
 
     <!-- ==================================================================== -->
-    <!-- Cleans the directories with the generated source files				  -->
+    <!-- Cleans the directories with the generated source files                  -->
     <!-- ==================================================================== -->
     <target name="clean" description="Cleans almost everything, so use carefully.">
-    	<delete dir="${c-target.dir}" includeemptydirs="true" quiet="false" verbose="true" failonerror="true"/>
+        <delete dir="${c-target.dir}" includeemptydirs="true" quiet="false" verbose="true" failonerror="true"/>
     </target>
 
     <!-- ==================================================================== -->
-    <!-- Prepares all the required directories								  -->
+    <!-- Prepares all the required directories                                  -->
     <!-- ==================================================================== -->
     <target name="prepare" depends="clean" description="Prepares all the required directories.">
         <mkdir dir="${c-build.dir}" />
-    	<mkdir dir="${c-target.dir}" />
+        <mkdir dir="${c-target.dir}" />
     </target>
 
     <!-- ==================================================================== -->
-    <!-- Copies the sources to the target directory							  -->
+    <!-- Copies the sources to the target directory                              -->
     <!-- ==================================================================== -->
     <target name="copy" depends="prepare" description="Copies the sources to the target directory.">
         <copy todir="${c-target.dir}" preservelastmodified="true" overwrite="true">
@@ -37,9 +37,9 @@
             </fileset>
         </copy>
     </target>
-	
+    
     <!-- ==================================================================== -->
-    <!-- Copies the sources to the deploy directory     					  -->
+    <!-- Copies the sources to the deploy directory                           -->
     <!-- ==================================================================== -->
     <target name="deploy" depends="copy" description="Copies the sources to the deploy directory.">
         <copy todir="${deploy.dir}" preservelastmodified="true" overwrite="true">
@@ -50,56 +50,56 @@
     </target>
 
     <!-- ==================================================================== -->
-    <!-- Check if PHP source package has been downloaded yet  		 	      -->
+    <!-- Check if PHP source package has been downloaded yet                     -->
     <!-- ==================================================================== -->
     <target name="check-php-src-present" description="Check if PHP Source Package has been downloaded yet.">
         <available file="/tmp/php-${php.version}.tar.gz" property="php-src.present"/>
     </target>
-	
+    
     <!-- ==================================================================== -->
-    <!-- Check if PECL memcached sources has been downloaded yet  		 	  -->
+    <!-- Check if PECL memcached sources has been downloaded yet                 -->
     <!-- ==================================================================== -->
     <target name="check-memcached-src-present" description="Check if PECL memcached sources has been downloaded yet.">
         <available file="/tmp/memcached-${appserver.memcached.version}.tgz" property="memcached-src.present"/>
     </target>
 
     <!-- ==================================================================== -->
-    <!-- Check if PECL pthreads sources has been downloaded yet  		 	  -->
+    <!-- Check if PECL pthreads sources has been downloaded yet                 -->
     <!-- ==================================================================== -->
     <target name="check-pthreads-src-present" description="Check if PECL pthreads sources has been downloaded yet.">
         <available file="/tmp/pthreads-${appserver.pthreads.version}.tgz" property="pthreads-src.present"/>
     </target>
 
     <!-- ==================================================================== -->
-    <!-- Check if PECL redis sources has been downloaded yet  		 	      -->
+    <!-- Check if PECL redis sources has been downloaded yet                     -->
     <!-- ==================================================================== -->
     <target name="check-redis-src-present" description="Check if PECL redis sources has been downloaded yet.">
         <available file="/tmp/redis-${appserver.redis.version}.tgz" property="redis-src.present"/>
     </target>
-	
+    
     <!-- ==================================================================== -->
-    <!-- Get PHP source package by given version number		  		          -->
+    <!-- Get PHP source package by given version number                            -->
     <!-- ==================================================================== -->
     <target name="get-php-src" depends="check-php-src-present" unless="${php-src.present}" description="Get PHP source package by given version number">
         <get src="http://de1.php.net/get/php-${php.version}.tar.gz/from/this/mirror" dest="/tmp/php-${php.version}.tar.gz"/>
     </target>
 
     <!-- ==================================================================== -->
-    <!-- Get PECL memcached source package by given version number		      -->
+    <!-- Get PECL memcached source package by given version number              -->
     <!-- ==================================================================== -->
     <target name="get-memcached-src" depends="check-memcached-src-present" unless="${memcached-src.present}" description="Get PECL memcached source package by given version number">
         <get src="http://pecl.php.net/get/memcached-${memcached.version}.tgz" dest="/tmp/memcached-${memcached.version}.tgz"/>
     </target>
 
     <!-- ==================================================================== -->
-    <!-- Get PECL pthreads source package by given version number		      -->
+    <!-- Get PECL pthreads source package by given version number              -->
     <!-- ==================================================================== -->
     <target name="get-pthreads-src" depends="check-pthreads-src-present" unless="${pthreads-src.present}" description="Get PECL pthreads source package by given version number">
         <get src="http://pecl.php.net/get/pthreads-${pthreads.version}.tgz" dest="/tmp/pthreads-${pthreads.version}.tgz"/>
     </target>
 
     <!-- ==================================================================== -->
-    <!-- Get PECL redis source package by given version number		          -->
+    <!-- Get PECL redis source package by given version number                  -->
     <!-- ==================================================================== -->
     <target name="get-redis-src" depends="check-redis-src-present" unless="${redis-src.present}" description="Get PECL redis source package by given version number">
         <get src="http://pecl.php.net/get/redis-${redis.version}.tgz" dest="/tmp/redis-${redis.version}.tgz"/>
@@ -113,46 +113,46 @@
         <antcall target="get-php-src"/>
         <untar src="/tmp/php-${php.version}.tar.gz" dest="${c-build.dir}" compression="gzip"/>
         <chmod perm="755">
-    		<fileset dir="${c-build.dir}/php-${php.version}/build">
-			    <include name="**/*"/>
-    		</fileset>
-    	</chmod>
-    	
-    	<antcall target="get-pthreads-src"/>
-    	<untar src="/tmp/pthreads-${pthreads.version}.tgz" dest="/tmp" compression="gzip"/>
-    	<move todir="${c-build.dir}/php-${php.version}/ext/pthreads">
+            <fileset dir="${c-build.dir}/php-${php.version}/build">
+                <include name="**/*"/>
+            </fileset>
+        </chmod>
+        
+        <antcall target="get-pthreads-src"/>
+        <untar src="/tmp/pthreads-${pthreads.version}.tgz" dest="/tmp" compression="gzip"/>
+        <move todir="${c-build.dir}/php-${php.version}/ext/pthreads">
             <fileset dir="/tmp/pthreads-${pthreads.version}"/>
         </move>
-    	
-    	<antcall target="get-memcached-src"/>
-    	<untar src="/tmp/memcached-${memcached.version}.tgz" dest="/tmp" compression="gzip"/>
-    	<move todir="${c-build.dir}/php-${php.version}/ext/memcached">
+        
+        <antcall target="get-memcached-src"/>
+        <untar src="/tmp/memcached-${memcached.version}.tgz" dest="/tmp" compression="gzip"/>
+        <move todir="${c-build.dir}/php-${php.version}/ext/memcached">
             <fileset dir="/tmp/memcached-${memcached.version}"/>
         </move>
-    	
-    	<antcall target="get-redis-src"/>
-    	<untar src="/tmp/redis-${redis.version}.tgz" dest="/tmp" compression="gzip"/>
-    	<move todir="${c-build.dir}/php-${php.version}/ext/redis">
+        
+        <antcall target="get-redis-src"/>
+        <untar src="/tmp/redis-${redis.version}.tgz" dest="/tmp" compression="gzip"/>
+        <move todir="${c-build.dir}/php-${php.version}/ext/redis">
             <fileset dir="/tmp/redis-${redis.version}"/>
-        </move>    	
+        </move>        
     </target>
-	
-	<!-- ==================================================================== -->
-    <!-- Init the PHP source for the build environment				          -->
+    
     <!-- ==================================================================== -->
-	<target name="configure" description="Configures the php runtime environment.">
-		<delete file="${c-build.dir}/php-${php.version}/aclocal.m4"/>
-		<delete file="${c-build.dir}/php-${php.version}/configure"/>
+    <!-- Init the PHP source for the build environment                          -->
+    <!-- ==================================================================== -->
+    <target name="configure" description="Configures the php runtime environment.">
+        <delete file="${c-build.dir}/php-${php.version}/aclocal.m4"/>
+        <delete file="${c-build.dir}/php-${php.version}/configure"/>
         <exec dir="${c-build.dir}/php-${php.version}" executable="sh">
             <arg value="buildconf"/>
             <arg line="--force"/>
         </exec>
-    	<!-- configure, compile and install PHP binary -->
+        <!-- configure, compile and install PHP binary -->
         <exec dir="${c-build.dir}/php-${php.version}" executable="sh">
             <env key="CC" value="${php.cc}"/>
             <arg line="configure ${php.configure}"/>
         </exec>
-	</target>
+    </target>
 
     <!-- ==================================================================== -->
     <!-- Makes the PHP source for the PHP Application Server runtime          -->
@@ -160,17 +160,17 @@
     <target name="make" description="Compiles the php runtime environment.">
         <exec dir="${c-build.dir}/php-${php.version}" executable="make"/>
     </target>
-	
-	<!-- ==================================================================== -->
-    <!-- Inits the build source for PHP 								      -->
+    
+    <!-- ==================================================================== -->
+    <!-- Inits the build source for PHP                                       -->
     <!-- ==================================================================== -->
     <target name="init-build" description="Init the php build environment.">
-    	<delete dir="${c-build.dir}" includeemptydirs="true" quiet="false" verbose="false" failonerror="true"/>
+        <delete dir="${c-build.dir}" includeemptydirs="true" quiet="false" verbose="false" failonerror="true"/>
         <antcall target="prepare-source"/>
-    	<antcall target="deploy"/>
-    	<antcall target="configure"/>
-    	<antcall target="make"/>
+        <antcall target="deploy"/>
+        <antcall target="configure"/>
+        <antcall target="make"/>
     </target>
-	
+    
 
 </project>

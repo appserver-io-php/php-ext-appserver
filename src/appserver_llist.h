@@ -13,19 +13,19 @@
 typedef void (*appserver_llist_dtor)(void *, void *);
 
 typedef struct _appserver_llist_element {
-	void *ptr;
+    void *ptr;
 
-	struct _appserver_llist_element *prev;
-	struct _appserver_llist_element *next;
+    struct _appserver_llist_element *prev;
+    struct _appserver_llist_element *next;
 } appserver_llist_element;
 
 typedef struct _appserver_llist {
-	appserver_llist_element *head;
-	appserver_llist_element *tail;
+    appserver_llist_element *head;
+    appserver_llist_element *tail;
 
-	appserver_llist_dtor dtor;
+    appserver_llist_dtor dtor;
 
-	size_t size;
+    size_t size;
 } appserver_llist;
 
 appserver_llist *appserver_llist_alloc(appserver_llist_dtor dtor);

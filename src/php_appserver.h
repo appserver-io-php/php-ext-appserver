@@ -25,11 +25,11 @@ extern zend_module_entry appserver_module_entry;
 #define APPSERVER_VERSION "0.1.0"
 
 #ifdef PHP_WIN32
-#	define PHP_APPSERVER_API __declspec(dllexport)
+#    define PHP_APPSERVER_API __declspec(dllexport)
 #elif defined(__GNUC__) && __GNUC__ >= 4
-#	define PHP_APPSERVER_API __attribute__ ((visibility("default")))
+#    define PHP_APPSERVER_API __attribute__ ((visibility("default")))
 #else
-#	define PHP_APPSERVER_API
+#    define PHP_APPSERVER_API
 #endif
 
 #if PHP_VERSION_ID >= 50300
@@ -63,10 +63,10 @@ PHP_MINFO_FUNCTION(appserver);
 PHP_FUNCTION(appserver_get_headers);
 
 ZEND_BEGIN_MODULE_GLOBALS(appserver)
-	appserver_llist 		*headers;
-	zend_fcall_info 		override_fci;
-	zend_fcall_info_cache 	override_fci_cache;
-	long 					pproftrace;
+    appserver_llist         *headers;
+    zend_fcall_info         override_fci;
+    zend_fcall_info_cache     override_fci_cache;
+    long                     pproftrace;
 ZEND_END_MODULE_GLOBALS(appserver)
 
 PHPAPI ZEND_EXTERN_MODULE_GLOBALS(apd)
@@ -81,21 +81,21 @@ PHPAPI ZEND_EXTERN_MODULE_GLOBALS(apd)
 #define TEMP_OVRD_FUNC_NAME "__overridden__"
 
 #define PHP_APPSERVER_SPLIT_PN(classname, classname_len, pnname, pnname_len) { \
-	char *colon; \
+    char *colon; \
 \
-	if ((pnname_len) > 3 && (colon = memchr((pnname), ':', (pnname_len) - 2)) && (colon[1] == ':')) { \
-		(classname) = (pnname); \
-		(classname_len) = colon - (classname); \
-		(pnname) = colon + 2; \
-		(pnname_len) -= (classname_len) + 2; \
-	} else { \
-		(classname) = NULL; \
-		(classname_len) = 0; \
-	} \
+    if ((pnname_len) > 3 && (colon = memchr((pnname), ':', (pnname_len) - 2)) && (colon[1] == ':')) { \
+        (classname) = (pnname); \
+        (classname_len) = colon - (classname); \
+        (pnname) = colon + 2; \
+        (pnname_len) -= (classname_len) + 2; \
+    } else { \
+        (classname) = NULL; \
+        (classname_len) = 0; \
+    } \
 }
 
 
-#endif	/* PHP_APPSERVER_H */
+#endif    /* PHP_APPSERVER_H */
 
 /*
  * Local variables:
