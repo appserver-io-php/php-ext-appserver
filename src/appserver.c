@@ -143,11 +143,12 @@ static void php_appserver_shutdown_globals (zend_appserver_globals *appserver_gl
 static void php_appserver_init_globals(zend_appserver_globals *appserver_globals)
 {
 
-    /* Override header generation in SAPI */
+    /* Override header generation in SAPI
     if (sapi_module.header_handler != appserver_header_handler) {
         appserver_orig_header_handler = sapi_module.header_handler;
         sapi_module.header_handler = appserver_header_handler;
     }
+	*/
 
     appserver_globals->headers = NULL;
 
