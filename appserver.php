@@ -21,12 +21,20 @@ if (extension_loaded($module)) {
 echo "$str\n";
 */
 
+echo "SAPI_TYPE: " . PHP_SAPI;
+
+echo PHP_EOL . "==========================================". PHP_EOL;
+
 header('X-Powered-By: appserver');
 header('Location: http://www.google.de');
 
 echo var_export(appserver_get_headers(), true);
 
-echo PHP_EOL . "finished." . PHP_EOL;
+echo PHP_EOL . "==========================================". PHP_EOL;
+
+appserver_override_function('header', function() { echo "CALLBACK"; });
+
+header('test');
 
 
 ?>

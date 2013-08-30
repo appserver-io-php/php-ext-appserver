@@ -61,10 +61,14 @@ PHP_RSHUTDOWN_FUNCTION(appserver);
 PHP_MINFO_FUNCTION(appserver);
 
 PHP_FUNCTION(appserver_get_headers);
+PHP_FUNCTION(appserver_override_function);
+PHP_FUNCTION(appserver_rename_function);
 
 ZEND_BEGIN_MODULE_GLOBALS(appserver)
-	appserver_llist *headers;
-	long 			pproftrace;
+	appserver_llist 		*headers;
+	zend_fcall_info 		override_fci;
+	zend_fcall_info_cache 	override_fci_cache;
+	long 					pproftrace;
 ZEND_END_MODULE_GLOBALS(appserver)
 
 PHPAPI ZEND_EXTERN_MODULE_GLOBALS(apd)
@@ -74,6 +78,24 @@ PHPAPI ZEND_EXTERN_MODULE_GLOBALS(apd)
 #else
 #define APPSERVER_GLOBALS(v) (appserver_globals.v)
 #endif
+
+#define APPSERVER_TSRMLS_PARAM(param) (param) TSRMLS_CC
+#define TEMP_OVRD_FUNC_NAME "__overridden__"
+
+#define PHP_APPSERVER_SPLIT_PN(classname, classname_len, pnname, pnname_len) { \
+	char *colon; \
+\
+	if ((pnname_len) > 3 && (colon = memchr((pnname), ':', (pnname_len) - 2)) && (colon[1] == ':')) { \
+		(classname) = (pnname); \
+		(classname_len) = colon - (classname); \
+		(pnname) = colon + 2; \
+		(pnname_len) -= (classname_len) + 2; \
+	} else { \
+		(classname) = NULL; \
+		(classname_len) = 0; \
+	} \
+}
+
 
 #endif	/* PHP_APPSERVER_H */
 
