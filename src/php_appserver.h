@@ -61,8 +61,6 @@ PHP_RSHUTDOWN_FUNCTION(appserver);
 PHP_MINFO_FUNCTION(appserver);
 
 PHP_FUNCTION(appserver_get_headers);
-PHP_FUNCTION(appserver_override_function);
-PHP_FUNCTION(appserver_rename_function);
 
 ZEND_BEGIN_MODULE_GLOBALS(appserver)
 	appserver_llist 		*headers;
