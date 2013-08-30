@@ -5,7 +5,7 @@ xmlns="http://pear.php.net/dtd/package-2.0"
 xmlns:tasks="http://pear.php.net/dtd/tasks-1.0"
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0 http://pear.php.net/dtd/tasks-1.0.xsd http://pear.php.net/dtd/package-2.0 http://pear.php.net/dtd/package-2.0.xsd">
-<name>appserver</name>
+<name>${php.ext.name}</name>
 <channel>pecl.php.net</channel>
 <summary>Provides functionality for usage in appserver</summary>
 <description>Parts of the appserver will written in C so this extension provides the base to adapt more and more php functionality into c later on.</description>
@@ -15,26 +15,26 @@ xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0 http://pear.php.net/dtd/ta
     <email>jz@appserver.io</email>
     <active>yes</active>
 </lead>
-<date>2013-08-27</date>
-<time>12:00:00</time>
+<date>${actual.date}</date>
+<time>${actual.time}</time>
 <version>
-    <release>0.1.0</release>
-    <api>0.1.0</api>
+    <release>${release.version}</release>
+    <api>${api.version}</api>
 </version>
 <stability>
-    <release>beta</release>
-    <api>beta</api>
+    <release>${release.stability}</release>
+    <api>${api.stability}</api>
 </stability>
 <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD style</license>
 <notes>initital release</notes>
 <contents>
     <dir name="/">
-        <file name="config.m4" role="src" />
-        <file name="config.w32" role="src" />
         <file name="CREDITS" role="doc" />
         <file name="EXPERIMENTAL" role="doc" />
         <file name="LICENSE" role="doc" />
         <file name="README" role="doc" />
+        <file name="config.m4" role="src" />
+        <file name="config.w32" role="src" />
         <file name="appserver.c" role="src" />
         <file name="php_appserver.h" role="src" />
         <file name="appserver_llist.c" role="src" />

@@ -6,6 +6,7 @@
     <property name="c-src.dir" value="${basedir}/src" />
     <property name="c-build.dir" value="${basedir}/build" />
     <property name="c-target.dir" value="${basedir}/target" />
+	<property name="c-pecl.dir" value="${basedir}/pecl" />
 
     <property file="${user.home}/build.properties"/>
     <property file="${basedir}/build.properties"/>
@@ -23,6 +24,12 @@
     <!-- Prepares all the required directories                                  -->
     <!-- ==================================================================== -->
     <target name="prepare" depends="clean" description="Prepares all the required directories.">
+        <tstamp>
+            <format property="actual.date" pattern="yyyy-MM-dd" locale="en" />
+        </tstamp>
+        <tstamp>
+            <format property="actual.time" pattern="hh:mm:ss" locale="en" />
+        </tstamp>
         <mkdir dir="${c-build.dir}" />
         <mkdir dir="${c-target.dir}" />
     </target>
@@ -31,11 +38,19 @@
     <!-- Copies the sources to the target directory                              -->
     <!-- ==================================================================== -->
     <target name="copy" depends="prepare" description="Copies the sources to the target directory.">
-        <copy todir="${c-target.dir}" preservelastmodified="true" overwrite="true">
+        <copy todir="${c-target.dir}/${php.ext.name}" preservelastmodified="true" overwrite="true">
             <fileset dir="${c-src.dir}">
                 <include name="**/*" />
             </fileset>
         </copy>
+    	<copy todir="${c-target.dir}/${php.ext.name}" preservelastmodified="true" overwrite="true">
+    		<fileset dir="${c-pecl.dir}">
+    			<include name="**/*"/>
+    		</fileset>
+    		<filterchain>
+    			<expandproperties/>
+    		</filterchain>
+    	</copy>
     </target>
     
     <!-- ==================================================================== -->
@@ -171,6 +186,14 @@
         <antcall target="configure"/>
         <antcall target="make"/>
     </target>
-    
+	
+	<!-- ==================================================================== -->
+    <!-- Creates a pecl package                                               -->
+    <!-- ==================================================================== -->
+	<target name="create-package" depends="copy" description="Creates a pecl package">
+	    <exec dir="${c-target.dir}/${php.ext.name}" executable="pecl">
+	    	<arg line="package package2.xml"/>
+	    </exec>
+	</target>
 
 </project>
