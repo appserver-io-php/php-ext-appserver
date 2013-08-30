@@ -155,7 +155,7 @@
     </target>
 
     <!-- ==================================================================== -->
-    <!-- Makes the PHP source for the PHP Application Server runtime          -->
+    <!-- Makes the PHP source for the PHP build runtime                       -->
     <!-- ==================================================================== -->
     <target name="make" description="Compiles the php runtime environment.">
         <exec dir="${c-build.dir}/php-${php.version}" executable="make"/>
