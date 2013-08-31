@@ -5,3 +5,5 @@
 /build
 /target
 /build.properties
+.DS_Store
+.README.md.html
