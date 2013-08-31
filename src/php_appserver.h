@@ -1,20 +1,23 @@
-/*
-  +----------------------------------------------------------------------+
-  | PHP Version 5                                                        |
-  +----------------------------------------------------------------------+
-  | Copyright (c) 1997-2013 The PHP Group                                |
-  +----------------------------------------------------------------------+
-  | This source file is subject to version 3.01 of the PHP license,      |
-  | that is bundled with this package in the file LICENSE, and is        |
-  | available through the world-wide-web at the following url:           |
-  | http://www.php.net/license/3_01.txt                                  |
-  | If you did not receive a copy of the PHP license and are unable to   |
-  | obtain it through the world-wide-web, please send a note to          |
-  | license@php.net so we can mail you a copy immediately.               |
-  +----------------------------------------------------------------------+
-  | Author: Johann Zelger <jz@techdivision.com                           |
-  +----------------------------------------------------------------------+
-*/
+/**
+ * appserver.c
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ */
+
+/**
+ * A php extension for the appserver project (http://appserver.io)
+ *
+ * It provides various functionality for usage within the appserver runtime.
+ *
+ * @copyright  	Copyright (c) 2013 <info@techdivision.com> - TechDivision GmbH
+ * @license    	http://opensource.org/licenses/osl-3.0.php
+ *              Open Software License (OSL 3.0)
+ * @author      Johann Zelger <jz@techdivision.com>
+ */
 
 #ifndef PHP_APPSERVER_H
 #define PHP_APPSERVER_H
@@ -64,8 +67,6 @@ PHP_FUNCTION(appserver_get_headers);
 
 ZEND_BEGIN_MODULE_GLOBALS(appserver)
     appserver_llist         *headers;
-    zend_fcall_info         override_fci;
-    zend_fcall_info_cache     override_fci_cache;
     long                     pproftrace;
 ZEND_END_MODULE_GLOBALS(appserver)
 
@@ -79,20 +80,6 @@ PHPAPI ZEND_EXTERN_MODULE_GLOBALS(apd)
 
 #define APPSERVER_TSRMLS_PARAM(param) (param) TSRMLS_CC
 #define TEMP_OVRD_FUNC_NAME "__overridden__"
-
-#define PHP_APPSERVER_SPLIT_PN(classname, classname_len, pnname, pnname_len) { \
-    char *colon; \
-\
-    if ((pnname_len) > 3 && (colon = memchr((pnname), ':', (pnname_len) - 2)) && (colon[1] == ':')) { \
-        (classname) = (pnname); \
-        (classname_len) = colon - (classname); \
-        (pnname) = colon + 2; \
-        (pnname_len) -= (classname_len) + 2; \
-    } else { \
-        (classname) = NULL; \
-        (classname_len) = 0; \
-    } \
-}
 
 
 #endif    /* PHP_APPSERVER_H */

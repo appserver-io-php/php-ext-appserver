@@ -1,20 +1,23 @@
-/*
-  +----------------------------------------------------------------------+
-  | PHP Version 5                                                        |
-  +----------------------------------------------------------------------+
-  | Copyright (c) 1997-2013 The PHP Group                                |
-  +----------------------------------------------------------------------+
-  | This source file is subject to version 3.01 of the PHP license,      |
-  | that is bundled with this package in the file LICENSE, and is        |
-  | available through the world-wide-web at the following url:           |
-  | http://www.php.net/license/3_01.txt                                  |
-  | If you did not receive a copy of the PHP license and are unable to   |
-  | obtain it through the world-wide-web, please send a note to          |
-  | license@php.net so we can mail you a copy immediately.               |
-  +----------------------------------------------------------------------+
-  | Author: Johann Zelger <jz@techdivision.com                           |
-  +----------------------------------------------------------------------+
-*/
+/**
+ * appserver.c
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ */
+
+/**
+ * A php extension for the appserver project (http://appserver.io)
+ *
+ * It provides various functionality for usage within the appserver runtime.
+ *
+ * @copyright  	Copyright (c) 2013 <info@techdivision.com> - TechDivision GmbH
+ * @license    	http://opensource.org/licenses/osl-3.0.php
+ *              Open Software License (OSL 3.0)
+ * @author      Johann Zelger <jz@techdivision.com>
+ */
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -69,21 +72,29 @@ ZEND_GET_MODULE(appserver)
 #endif
 
 
-static void appserver_header_remove_with_prefix(appserver_llist *headers, char *prefix, int prefix_len TSRMLS_DC)
+static void appserver_llist_string_destor(void *data)
 {
-    appserver_llist_element *le;
+    char *s = data;
+
+    if (s) {
+        free(s);
+    }
+}
+
+static void appserver_header_remove_by_prefix(appserver_llist *headers, char *prefix, int prefix_len TSRMLS_DC)
+{
+    appserver_llist_item *item;
     char                 *header;
 
-    for (le = APPSERVER_LLIST_HEAD(APPSERVER_GLOBALS(headers)); le != NULL;) {
-        header = APPSERVER_LLIST_VALP(le);
-
+    // iterate through items
+    for (item = APPSERVER_GLOBALS(headers)->head; item != NULL; item = item->next) {
+    	// get value from item
+        header = item->ptr;
+        // check if prefix was found
         if ((strlen(header) > prefix_len + 1) && (header[prefix_len] == ':') && (strncasecmp(header, prefix, prefix_len) == 0)) {
-            appserver_llist_element *current = le;
-
-            le = APPSERVER_LLIST_NEXT(le);
-            appserver_llist_remove(headers, current, NULL);
-        } else {
-            le = APPSERVER_LLIST_NEXT(le);
+            appserver_llist_item *current = item;
+            // delete header
+            appserver_llist_del(headers, current);
         }
     }
 }
@@ -91,10 +102,10 @@ static void appserver_header_remove_with_prefix(appserver_llist *headers, char *
 static int appserver_header_handler(sapi_header_struct *h AS_SAPI_HEADER_OP_DC, sapi_headers_struct *s TSRMLS_DC)
 {
     if (APPSERVER_GLOBALS(headers)) {
-#if PHP_VERSION_ID >= 50300
         switch (op) {
+
             case SAPI_HEADER_ADD:
-                appserver_llist_insert_next(APPSERVER_GLOBALS(headers), APPSERVER_LLIST_TAIL(APPSERVER_GLOBALS(headers)), strdup(h->header));
+            	appserver_llist_add(APPSERVER_GLOBALS(headers), NULL, strdup(h->header));
                 break;
 
             case SAPI_HEADER_REPLACE: {
@@ -104,16 +115,16 @@ static int appserver_header_handler(sapi_header_struct *h AS_SAPI_HEADER_OP_DC, 
                     char save = *colon_offset;
 
                     *colon_offset = '\0';
-                    appserver_header_remove_with_prefix(APPSERVER_GLOBALS(headers), h->header, strlen(h->header) TSRMLS_CC);
+                    appserver_header_remove_by_prefix(APPSERVER_GLOBALS(headers), h->header, strlen(h->header) TSRMLS_CC);
                     *colon_offset = save;
                 }
 
-                appserver_llist_insert_next(APPSERVER_GLOBALS(headers), APPSERVER_LLIST_TAIL(APPSERVER_GLOBALS(headers)), strdup(h->header));
+                appserver_llist_add(APPSERVER_GLOBALS(headers), NULL, strdup(h->header));
                 }
                 break;
 
             case SAPI_HEADER_DELETE_ALL:
-                appserver_llist_empty(APPSERVER_GLOBALS(headers), NULL);
+                appserver_llist_clear(APPSERVER_GLOBALS(headers));
                 break;
 
             case SAPI_HEADER_DELETE:
@@ -123,17 +134,17 @@ static int appserver_header_handler(sapi_header_struct *h AS_SAPI_HEADER_OP_DC, 
                 break;
 
         }
-#else
-        appserver_llist_insert_next(APPSERVER_GLOBALS(headers), APPSERVER_LLIST_TAIL(APPSERVER_GLOBALS(headers)), strdup(h->header));
-#endif
     }
 
-    if (appserver_orig_header_handler) {
-        return appserver_orig_header_handler(h AS_SAPI_HEADER_OP_CC, s TSRMLS_CC);
-    }
+    // Disables the orig header handler to avoid headers_sent check.
+
+    // if (appserver_orig_header_handler) {
+    //    return appserver_orig_header_handler(h AS_SAPI_HEADER_OP_CC, s TSRMLS_CC);
+    // }
 
     return SAPI_HEADER_ADD;
 }
+
 
 static void php_appserver_shutdown_globals (zend_appserver_globals *appserver_globals TSRMLS_DC)
 {
@@ -143,24 +154,14 @@ static void php_appserver_shutdown_globals (zend_appserver_globals *appserver_gl
 static void php_appserver_init_globals(zend_appserver_globals *appserver_globals)
 {
 
-    /* Override header generation in SAPI
+    /* Override header generation in SAPI */
     if (sapi_module.header_handler != appserver_header_handler) {
         appserver_orig_header_handler = sapi_module.header_handler;
         sapi_module.header_handler = appserver_header_handler;
     }
-	*/
 
     appserver_globals->headers = NULL;
 
-}
-
-static void appserver_llist_string_dtor(void *dummy, void *elem)
-{
-    char *s = elem;
-
-    if (s) {
-        free(s);
-    }
 }
 
 PHP_MSHUTDOWN_FUNCTION(appserver)
@@ -191,7 +192,7 @@ PHP_MINIT_FUNCTION(appserver)
 PHP_RINIT_FUNCTION(appserver)
 {
 
-    APPSERVER_GLOBALS(headers) = appserver_llist_alloc(appserver_llist_string_dtor);
+    APPSERVER_GLOBALS(headers) = appserver_llist_allocate(appserver_llist_string_destor);
 
     return SUCCESS;
 }
@@ -214,12 +215,12 @@ PHP_MINFO_FUNCTION(appserver)
 
 PHP_FUNCTION(appserver_get_headers)
 {
-    appserver_llist_element *le;
-    char                     *string;
+    appserver_llist_item *header_item;
+    char                 *string;
 
     array_init(return_value);
-    for (le = APPSERVER_LLIST_HEAD(APPSERVER_GLOBALS(headers)); le != NULL; le = APPSERVER_LLIST_NEXT(le)) {
-        string = APPSERVER_LLIST_VALP(le);
+    for (header_item = APPSERVER_GLOBALS(headers)->head; header_item != NULL; header_item = header_item->next) {
+        string = header_item->ptr;
         add_next_index_string(return_value, string, 1);
     }
 }

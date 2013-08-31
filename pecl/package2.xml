@@ -25,7 +25,7 @@ xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0 http://pear.php.net/dtd/ta
     <release>${release.stability}</release>
     <api>${api.stability}</api>
 </stability>
-<license uri="http://www.opensource.org/licenses/bsd-license.php">BSD style</license>
+<license uri="http://www.php.net/license/3_01.txt">PHP 3.01</license>
 <notes>initital release</notes>
 <contents>
     <dir name="/">
@@ -64,7 +64,7 @@ xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0 http://pear.php.net/dtd/ta
             <api>beta</api>
         </stability>
         <date>2013-08-27</date>
-        <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD style</license>
+        <license uri="http://www.php.net/license/3_01.txt">PHP 3.01</license>
         <notes>initial release</notes>
     </release>
 </changelog>
