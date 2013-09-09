@@ -64,9 +64,12 @@ PHP_RSHUTDOWN_FUNCTION(appserver);
 PHP_MINFO_FUNCTION(appserver);
 
 PHP_FUNCTION(appserver_get_headers);
+PHP_FUNCTION(appserver_register_file_upload);
+PHP_FUNCTION(appserver_set_headers_sent);
 
 ZEND_BEGIN_MODULE_GLOBALS(appserver)
     appserver_llist         *headers;
+	HashTable 				*uploaded_files;
     long                     pproftrace;
 ZEND_END_MODULE_GLOBALS(appserver)
 

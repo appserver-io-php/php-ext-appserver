@@ -25,6 +25,34 @@ header('Location: http://www.google.de');
 echo "SAPI_TYPE: " . PHP_SAPI;
 echo PHP_EOL . "==========================================". PHP_EOL;
 
-echo "CALL appserver_get_headers()" . PHP_EOL;
+appserver_set_headers_sent(true);
+$result = var_export(headers_sent(), true);
+echo "CALL appserver_set_headers_sent(true): -> headers_sent = " . $result . PHP_EOL;
+appserver_set_headers_sent(false);
+$result = var_export(headers_sent(), true);
+echo "CALL appserver_set_headers_sent(false): -> headers_sent = " . $result . PHP_EOL;
+echo PHP_EOL . "==========================================". PHP_EOL;
+
+echo "CALL appserver_get_headers(): -> ";
 echo var_export(appserver_get_headers(), true);
 echo PHP_EOL . "==========================================". PHP_EOL;
+
+echo "CALL headers_sent(): -> ";
+echo var_export(headers_sent(), true);
+echo PHP_EOL . "==========================================". PHP_EOL;
+
+
+$temp_filenames[] = tempnam('/tmp', '');
+$temp_filenames[] = tempnam('/tmp', '');
+$temp_filenames[] = tempnam('/tmp', '');
+$temp_filenames[] = tempnam('/tmp', '');
+
+foreach ($temp_filenames as $index => $temp_filename) {
+    file_put_contents($temp_filename, 'Hi there iam a upload file.');
+    echo "CALL #$index appserver_register_file_upload(): -> ";
+    echo var_export(appserver_register_file_upload($temp_filename), true);
+    echo PHP_EOL . "==========================================". PHP_EOL;
+    
+    echo "CALL #$index move_uploaded_file: -> " .var_export(move_uploaded_file($temp_filename, '/tmp/move_uploaded_file_success'), true);
+    echo PHP_EOL . "==========================================". PHP_EOL;
+}

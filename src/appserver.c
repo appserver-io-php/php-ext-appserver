@@ -51,6 +51,8 @@ int (*appserver_orig_header_handler)(sapi_header_struct *h AS_SAPI_HEADER_OP_DC,
 
 const zend_function_entry appserver_functions[] = {
     PHP_FE(appserver_get_headers, NULL)
+    PHP_FE(appserver_register_file_upload, NULL)
+    PHP_FE(appserver_set_headers_sent, NULL)
     PHP_FE_END
 };
 
@@ -101,6 +103,7 @@ static void appserver_header_remove_by_prefix(appserver_llist *headers, char *pr
 
 static int appserver_header_handler(sapi_header_struct *h AS_SAPI_HEADER_OP_DC, sapi_headers_struct *s TSRMLS_DC)
 {
+
     if (APPSERVER_GLOBALS(headers)) {
         switch (op) {
 
@@ -142,9 +145,11 @@ static int appserver_header_handler(sapi_header_struct *h AS_SAPI_HEADER_OP_DC, 
     //    return appserver_orig_header_handler(h AS_SAPI_HEADER_OP_CC, s TSRMLS_CC);
     // }
 
+    // set headers not be sent yet
+    SG(headers_sent) = 0;
+
     return SAPI_HEADER_ADD;
 }
-
 
 static void php_appserver_shutdown_globals (zend_appserver_globals *appserver_globals TSRMLS_DC)
 {
@@ -153,7 +158,6 @@ static void php_appserver_shutdown_globals (zend_appserver_globals *appserver_gl
 
 static void php_appserver_init_globals(zend_appserver_globals *appserver_globals)
 {
-
     /* Override header generation in SAPI */
     if (sapi_module.header_handler != appserver_header_handler) {
         appserver_orig_header_handler = sapi_module.header_handler;
@@ -161,7 +165,6 @@ static void php_appserver_init_globals(zend_appserver_globals *appserver_globals
     }
 
     appserver_globals->headers = NULL;
-
 }
 
 PHP_MSHUTDOWN_FUNCTION(appserver)
@@ -191,7 +194,6 @@ PHP_MINIT_FUNCTION(appserver)
 
 PHP_RINIT_FUNCTION(appserver)
 {
-
     APPSERVER_GLOBALS(headers) = appserver_llist_allocate(appserver_llist_string_destor);
 
     return SUCCESS;
@@ -213,6 +215,29 @@ PHP_MINFO_FUNCTION(appserver)
     */
 }
 
+PHP_FUNCTION(appserver_register_file_upload)
+{
+	char *path;
+	int path_len;
+	HashTable *uploaded_files = NULL;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &path, &path_len) == FAILURE) {
+		return;
+	}
+
+	// check if uploaded files sapi globals are not initialised
+	if (!SG(rfc1867_uploaded_files)) {
+		ALLOC_HASHTABLE(uploaded_files);
+		zend_hash_init(uploaded_files, 5, NULL, NULL, 0);
+		SG(rfc1867_uploaded_files) = uploaded_files;
+	}
+
+	// add to zend hash table
+	zend_hash_add(SG(rfc1867_uploaded_files), path, path_len + 1, &path, sizeof(char *), NULL);
+
+	RETURN_TRUE;
+}
+
 PHP_FUNCTION(appserver_get_headers)
 {
     appserver_llist_item *header_item;
@@ -223,6 +248,18 @@ PHP_FUNCTION(appserver_get_headers)
         string = header_item->ptr;
         add_next_index_string(return_value, string, 1);
     }
+}
+
+PHP_FUNCTION(appserver_set_headers_sent)
+{
+	zend_bool headers_sent_flag = 0;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|b", &headers_sent_flag) == FAILURE) {
+		return;
+	}
+
+	// set headers not be sent yet
+	SG(headers_sent) = headers_sent_flag;
 }
 
 
