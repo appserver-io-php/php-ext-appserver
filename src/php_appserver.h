@@ -35,6 +35,7 @@ extern zend_module_entry appserver_module_entry;
 #    define PHP_APPSERVER_API
 #endif
 
+
 #if PHP_VERSION_ID >= 50300
 # define AS_SAPI_HEADER_OP_DC   , sapi_header_op_enum op
 # define AS_SAPI_HEADER_OP_CC   , op
@@ -66,10 +67,12 @@ PHP_MINFO_FUNCTION(appserver);
 PHP_FUNCTION(appserver_get_headers);
 PHP_FUNCTION(appserver_register_file_upload);
 PHP_FUNCTION(appserver_set_headers_sent);
+PHP_FUNCTION(appserver_redefine);
 
 ZEND_BEGIN_MODULE_GLOBALS(appserver)
     appserver_llist         *headers;
 	HashTable 				*uploaded_files;
+	HashTable                redefined;
     long                     pproftrace;
 ZEND_END_MODULE_GLOBALS(appserver)
 

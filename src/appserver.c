@@ -53,6 +53,7 @@ const zend_function_entry appserver_functions[] = {
     PHP_FE(appserver_get_headers, NULL)
     PHP_FE(appserver_register_file_upload, NULL)
     PHP_FE(appserver_set_headers_sent, NULL)
+    PHP_FE(appserver_redefine, NULL)
     PHP_FE_END
 };
 
@@ -167,6 +168,13 @@ static void php_appserver_init_globals(zend_appserver_globals *appserver_globals
     appserver_globals->headers = NULL;
 }
 
+static inline void php_appserver_free_redefined(zval **pzval) 
+{
+    TSRMLS_FETCH();
+    zval_dtor(*pzval);
+    efree(*pzval);
+}
+
 PHP_MSHUTDOWN_FUNCTION(appserver)
 {
     /* uncomment this line if you have INI entries
@@ -195,12 +203,15 @@ PHP_MINIT_FUNCTION(appserver)
 PHP_RINIT_FUNCTION(appserver)
 {
     APPSERVER_GLOBALS(headers) = appserver_llist_allocate(appserver_llist_string_destor);
-
+    zend_hash_init(
+        &APPSERVER_GLOBALS(redefined), 16, NULL, (dtor_func_t) php_appserver_free_redefined, 0);
     return SUCCESS;
 }
 
 PHP_RSHUTDOWN_FUNCTION(appserver)
 {
+    zend_hash_destroy(
+        &APPSERVER_GLOBALS(redefined));
     return SUCCESS;
 }
 
@@ -213,6 +224,65 @@ PHP_MINFO_FUNCTION(appserver)
     /* Remove comments if you have entries in php.ini
     DISPLAY_INI_ENTRIES();
     */
+}
+
+/* {{{ proto boolean appserver_redefine(string $constant [, mixed $value]) 
+        redefine/undefine constant at runtime ... /* }}} */  
+PHP_FUNCTION(appserver_redefine)
+{
+    char *name;
+    zend_uint name_len;
+    zval *pzval = NULL;
+    
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s|z", &name, &name_len, &pzval) == FAILURE) {
+        return;
+    }
+    
+    {
+        zend_constant *defined = NULL;
+        
+        if (zend_hash_find(EG(zend_constants), name, name_len+1, (void**)&defined) == FAILURE) {
+            char *lname = zend_str_tolower_dup(name, name_len);
+            
+            if (zend_hash_find(
+                EG(zend_constants), lname, name_len+1, (void**)&defined) == SUCCESS) {
+                if (defined->flags & CONST_CS)
+                    defined = NULL;
+            }
+            
+            efree(lname);
+        }
+        
+        if (defined != NULL) {
+            /* change user constant */
+            if ((defined->module_number == PHP_USER_CONSTANT)) {
+                zend_constant container = *defined;
+                
+                container.name = zend_strndup(container.name, container.name_len);
+                
+                if (zend_hash_del(EG(zend_constants), name, name_len+1)==SUCCESS) {
+                    if (pzval) {
+                        SEPARATE_ZVAL(&pzval);
+                        container.value = *pzval;
+                        zend_hash_next_index_insert(
+                            &APPSERVER_GLOBALS(redefined), &pzval, sizeof(zval**), NULL);
+                        Z_ADDREF_P(pzval);
+                        zend_register_constant(
+                            &container TSRMLS_CC);
+                    }           
+                }
+            } else {
+                /* change internal constant */
+                SEPARATE_ZVAL(&pzval);
+                defined->value = *pzval;
+                zend_hash_next_index_insert(
+                    &APPSERVER_GLOBALS(redefined), &pzval, sizeof(zval**), NULL);
+                Z_ADDREF_P(pzval);
+            }
+        }
+        
+        RETURN_FALSE;
+    }
 }
 
 PHP_FUNCTION(appserver_register_file_upload)
