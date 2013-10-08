@@ -258,7 +258,8 @@ PHP_FUNCTION(appserver_redefine)
             if ((defined->module_number == PHP_USER_CONSTANT)) {
                 zend_constant container = *defined;
                 
-                container.name = zend_strndup(container.name, container.name_len);
+                if (pzval)
+                    container.name = zend_strndup(container.name, container.name_len);
                 
                 if (zend_hash_del(EG(zend_constants), name, name_len+1)==SUCCESS) {
                     if (pzval) {
@@ -267,9 +268,8 @@ PHP_FUNCTION(appserver_redefine)
                         zend_hash_next_index_insert(
                             &APPSERVER_GLOBALS(redefined), &pzval, sizeof(zval**), NULL);
                         Z_ADDREF_P(pzval);
-                        zend_register_constant(
-                            &container TSRMLS_CC);
-                    }           
+                        zend_register_constant(&container TSRMLS_CC);
+                    }       
                 }
             } else {
                 /* change internal constant */
