@@ -195,7 +195,7 @@ PHP_MINIT_FUNCTION(appserver)
     /* If you have INI entries, uncomment these lines
     REGISTER_INI_ENTRIES();
     */
-    ZEND_INIT_MODULE_GLOBALS(appserver, php_appserver_init_globals, php_appserver_shutdown_globals);
+    ZEND_INIT_MODULE_GLOBALS(appserver, php_appserver_init_globals, NULL);
 
     return SUCCESS;
 }
