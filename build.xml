@@ -75,14 +75,21 @@
     <!-- Check if PECL memcached sources has been downloaded yet                 -->
     <!-- ==================================================================== -->
     <target name="check-memcached-src-present" description="Check if PECL memcached sources has been downloaded yet.">
-        <available file="/tmp/memcached-${appserver.memcached.version}.tgz" property="memcached-src.present"/>
+        <available file="/tmp/memcached-${memcached.version}.tgz" property="memcached-src.present"/>
+    </target>
+    
+    <!-- ==================================================================== -->
+    <!-- Check if PECL apcu sources has been downloaded yet                 -->
+    <!-- ==================================================================== -->
+    <target name="check-apcu-src-present" description="Check if PECL memcached sources has been downloaded yet.">
+        <available file="/tmp/apcu-${apcu.version}.tgz" property="apcu-src.present"/>
     </target>
 
     <!-- ==================================================================== -->
     <!-- Check if PECL pthreads sources has been downloaded yet                 -->
     <!-- ==================================================================== -->
     <target name="check-pthreads-src-present" description="Check if PECL pthreads sources has been downloaded yet.">
-        <available file="/tmp/pthreads-${appserver.pthreads.version}.tgz" property="pthreads-src.present"/>
+        <available file="/tmp/pthreads-${pthreads.version}.tgz" property="pthreads-src.present"/>
     </target>
 
     <!-- ==================================================================== -->
@@ -104,6 +111,13 @@
     <!-- ==================================================================== -->
     <target name="get-memcached-src" depends="check-memcached-src-present" unless="${memcached-src.present}" description="Get PECL memcached source package by given version number">
         <get src="http://pecl.php.net/get/memcached-${memcached.version}.tgz" dest="/tmp/memcached-${memcached.version}.tgz"/>
+    </target>
+    
+    <!-- ==================================================================== -->
+    <!-- Get PECL apcu source package by given version number              -->
+    <!-- ==================================================================== -->
+    <target name="get-apcu-src" depends="check-apcu-src-present" unless="${apcu-src.present}" description="Get PECL memcached source package by given version number">
+        <get src="http://pecl.php.net/get/apcu-${apcu.version}.tgz" dest="/tmp/apcu-${apcu.version}.tgz"/>
     </target>
 
     <!-- ==================================================================== -->
@@ -133,11 +147,16 @@
             </fileset>
         </chmod>
         
+        <!--
         <antcall target="get-pthreads-src"/>
         <untar src="/tmp/pthreads-${pthreads.version}.tgz" dest="/tmp" compression="gzip"/>
         <move todir="${c-build.dir}/php-${php.version}/ext/pthreads">
             <fileset dir="/tmp/pthreads-${pthreads.version}"/>
         </move>
+        -->
+        <exec executable="git" dir="${c-build.dir}/php-${php.version}/ext">
+            <arg line="clone https://github.com/krakjoe/pthreads.git"/>
+        </exec>
         
         <antcall target="get-memcached-src"/>
         <untar src="/tmp/memcached-${memcached.version}.tgz" dest="/tmp" compression="gzip"/>
@@ -149,7 +168,13 @@
         <untar src="/tmp/redis-${redis.version}.tgz" dest="/tmp" compression="gzip"/>
         <move todir="${c-build.dir}/php-${php.version}/ext/redis">
             <fileset dir="/tmp/redis-${redis.version}"/>
-        </move>        
+        </move>
+        
+        <antcall target="get-apcu-src"/>
+        <untar src="/tmp/apcu-${apcu.version}.tgz" dest="/tmp" compression="gzip"/>
+        <move todir="${c-build.dir}/php-${php.version}/ext/apcu">
+            <fileset dir="/tmp/apcu-${apcu.version}"/>
+        </move>
     </target>
     
     <!-- ==================================================================== -->
