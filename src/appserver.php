@@ -19,10 +19,8 @@
  * @author      Johann Zelger <jz@techdivision.com>
  */
 
-header('X-Powered-By: appserver');
-header('Location: http://www.google.de');
-
-echo "SAPI_TYPE: " . PHP_SAPI;
+appserver_redefine('PHP_SAPI', 'appserver');
+echo "CALL appserver_redefine('PHP_SAPI', 'appserver'): -> SAPI_TYPE: " . PHP_SAPI;
 echo PHP_EOL . "==========================================". PHP_EOL;
 
 appserver_set_headers_sent(true);
@@ -30,9 +28,12 @@ $result = var_export(headers_sent(), true);
 echo "CALL appserver_set_headers_sent(true): -> headers_sent = " . $result . PHP_EOL;
 appserver_set_headers_sent(false);
 $result = var_export(headers_sent(), true);
-echo "CALL appserver_set_headers_sent(false): -> headers_sent = " . $result . PHP_EOL;
+echo "CALL appserver_set_headers_sent(false): -> headers_sent = " . $result;
 echo PHP_EOL . "==========================================". PHP_EOL;
 
+appserver_set_headers_sent(false);
+header('X-Powered-By: appserver');
+header('Location: http://www.google.de');
 echo "CALL appserver_get_headers(): -> ";
 echo var_export(appserver_get_headers(), true);
 echo PHP_EOL . "==========================================". PHP_EOL;
@@ -52,7 +53,7 @@ foreach ($temp_filenames as $index => $temp_filename) {
     echo "CALL #$index appserver_register_file_upload(): -> ";
     echo var_export(appserver_register_file_upload($temp_filename), true);
     echo PHP_EOL . "==========================================". PHP_EOL;
-    
+
     echo "CALL #$index move_uploaded_file: -> " .var_export(move_uploaded_file($temp_filename, '/tmp/move_uploaded_file_success'), true);
     echo PHP_EOL . "==========================================". PHP_EOL;
 }
