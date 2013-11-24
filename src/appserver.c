@@ -59,7 +59,7 @@ const zend_function_entry appserver_functions[] = {
 
 zend_module_entry appserver_module_entry = {
     STANDARD_MODULE_HEADER,
-    "appserver",
+    APPSERVER_NAME,
     appserver_functions,
     PHP_MINIT(appserver),
     PHP_MSHUTDOWN(appserver),
@@ -217,8 +217,9 @@ PHP_RSHUTDOWN_FUNCTION(appserver)
 
 PHP_MINFO_FUNCTION(appserver)
 {
-    php_info_print_table_start();
+	php_info_print_table_start();
     php_info_print_table_header(2, "appserver support", "enabled");
+    php_info_print_table_row(2, "Version", APPSERVER_VERSION);
     php_info_print_table_end();
 
     /* Remove comments if you have entries in php.ini
@@ -308,15 +309,26 @@ PHP_FUNCTION(appserver_register_file_upload)
 	RETURN_TRUE;
 }
 
+/* {{{ proto array appserver_get_headers(boolean $reset_headers_flag)
+        gets headers set via header function and reset if flag was set ... /* }}} */
 PHP_FUNCTION(appserver_get_headers)
 {
     appserver_llist_item *header_item;
+	zend_bool headers_reset_flag = 0;
     char                 *string;
-
+    // parse params
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "|b", &headers_reset_flag) == FAILURE) {
+        return;
+    }
+    // init return value as array
     array_init(return_value);
     for (header_item = APPSERVER_GLOBALS(headers)->head; header_item != NULL; header_item = header_item->next) {
         string = header_item->ptr;
         add_next_index_string(return_value, string, 1);
+    }
+    // clear headers globals hash if delete flag was given
+    if (headers_reset_flag != 0) {
+    	appserver_llist_clear(APPSERVER_GLOBALS(headers));
     }
 }
 

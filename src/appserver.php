@@ -26,17 +26,24 @@ echo PHP_EOL . "==========================================". PHP_EOL;
 appserver_set_headers_sent(true);
 $result = var_export(headers_sent(), true);
 echo "CALL appserver_set_headers_sent(true): -> headers_sent = " . $result . PHP_EOL;
-appserver_set_headers_sent(false);
+appserver_set_headers_sent();
 $result = var_export(headers_sent(), true);
 echo "CALL appserver_set_headers_sent(false): -> headers_sent = " . $result;
 echo PHP_EOL . "==========================================". PHP_EOL;
 
 appserver_set_headers_sent(false);
 header('X-Powered-By: appserver');
-header('Location: http://www.google.de');
-echo "CALL appserver_get_headers(): -> ";
+header('Location: http://www.appserver.io');
+echo "CALL #1 appserver_get_headers(): -> ";
 echo var_export(appserver_get_headers(), true);
 echo PHP_EOL . "==========================================". PHP_EOL;
+echo "CALL #2 appserver_get_headers(true): -> ";
+echo var_export(appserver_get_headers(true), true);
+echo PHP_EOL . "==========================================". PHP_EOL;
+echo "CALL #3 appserver_get_headers(): -> ";
+echo var_export(appserver_get_headers(), true);
+echo PHP_EOL . "==========================================". PHP_EOL;
+
 
 echo "CALL headers_sent(): -> ";
 echo var_export(headers_sent(), true);
