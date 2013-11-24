@@ -44,6 +44,14 @@
             </fileset>
         </copy>
         <copy todir="${c-target.dir}/${php.ext.name}" preservelastmodified="true" overwrite="true">
+            <fileset dir="${c-src.dir}">
+                <include name="php_appserver.h" />
+            </fileset>
+            <filterchain>
+                <expandproperties/>
+            </filterchain>
+        </copy>
+        <copy todir="${c-target.dir}/${php.ext.name}" preservelastmodified="true" overwrite="true">
             <fileset dir="${c-pecl.dir}">
                 <include name="**/*"/>
             </fileset>

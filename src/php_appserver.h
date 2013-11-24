@@ -25,7 +25,8 @@
 extern zend_module_entry appserver_module_entry;
 #define phpext_appserver_ptr &appserver_module_entry
 
-#define APPSERVER_VERSION "0.1.0"
+#define APPSERVER_NAME "${php.ext.name}"
+#define APPSERVER_VERSION "${release.version}"
 
 #ifdef PHP_WIN32
 #    define PHP_APPSERVER_API __declspec(dllexport)
@@ -71,7 +72,7 @@ PHP_FUNCTION(appserver_redefine);
 
 ZEND_BEGIN_MODULE_GLOBALS(appserver)
     appserver_llist         *headers;
-	HashTable 				*uploaded_files;
+	HashTable               *uploaded_files;
 	HashTable                redefined;
     long                     pproftrace;
 ZEND_END_MODULE_GLOBALS(appserver)
