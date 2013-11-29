@@ -29,7 +29,7 @@ To debug the application server you have to do the following steps:
 $ git clone https://github.com/techdivision/php-ext-appserver.git
 ```
 
-## Step 2 - Build PHP with `--enable-debug`
+## Step 2 - Build PHP with --enable-debug
 
 Compile PHP configured with `--enabled-debug` and all other configuration switches
 appserver.io has been compiled with. 
