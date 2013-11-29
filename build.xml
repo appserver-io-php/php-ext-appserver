@@ -106,6 +106,13 @@
     <target name="check-redis-src-present" description="Check if PECL redis sources has been downloaded yet.">
         <available file="/tmp/redis-${appserver.redis.version}.tgz" property="redis-src.present"/>
     </target>
+
+    <!-- ==================================================================== -->
+    <!-- Check if PECL xdebug sources has been downloaded yet                     -->
+    <!-- ==================================================================== -->
+    <target name="check-xdebug-src-present" description="Check if PECL xdebug sources has been downloaded yet.">
+        <available file="/tmp/xdebug-${appserver.xdebug.version}.tgz" property="xdebug-src.present"/>
+    </target>
     
     <!-- ==================================================================== -->
     <!-- Get PHP source package by given version number                            -->
@@ -142,6 +149,13 @@
         <get src="http://pecl.php.net/get/redis-${redis.version}.tgz" dest="/tmp/redis-${redis.version}.tgz"/>
     </target>
 
+    <!-- ==================================================================== -->
+    <!-- Get PECL xdebug source package by given version number               -->
+    <!-- ==================================================================== -->
+    <target name="get-xdebug-src" depends="check-xdebug-src-present" unless="${xdebug-src.present}" description="Get PECL xdebug source package by given version number">
+        <get src="http://pecl.php.net/get/xdebug-${xdebug.version}.tgz" dest="/tmp/xdebug-${xdebug.version}.tgz"/>
+    </target>
+	
     <!-- ==================================================================== -->
     <!-- Prepares the PHP sources for the runtime                             -->
     <!-- ==================================================================== -->
@@ -182,6 +196,12 @@
         <untar src="/tmp/apcu-${apcu.version}.tgz" dest="/tmp" compression="gzip"/>
         <move todir="${c-build.dir}/php-${php.version}/ext/apcu">
             <fileset dir="/tmp/apcu-${apcu.version}"/>
+        </move>
+        
+        <antcall target="get-xdebug-src"/>
+        <untar src="/tmp/xdebug-${xdebug.version}.tgz" dest="/tmp" compression="gzip"/>
+        <move todir="${c-build.dir}/php-${php.version}/ext/xdebug">
+            <fileset dir="/tmp/xdebug-${xdebug.version}"/>
         </move>
     </target>
     
