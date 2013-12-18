@@ -19,9 +19,19 @@ ANT from the command line, if available.
 
 As appserver.io on Mac OS X is delivered with some precompiled libraries, it is
 also necessary that you have the latest version of appserver.io installed in the 
-default directory `/opt/appserver` before start to prepare PHP for debugging mode. 
+default directory `/opt/appserver` before start to prepare PHP for debugging mode.
 
 To debug the application server you have to do the following steps:
+
+## Prequesites
+
+Open the /etc/launchd.conf and add the following lines if not already available:
+
+```
+limit maxfiles 100000 100000
+setenv PATH /usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin
+setenv LANG de_DE.UTF-8
+```
 
 ## Step 1 - Clone sources:
 
