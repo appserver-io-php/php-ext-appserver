@@ -29,8 +29,6 @@ xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0 http://pear.php.net/dtd/ta
 <notes>version-release</notes>
 <contents>
     <dir name="/">
-        <file name="CREDITS" role="doc" />
-        <file name="EXPERIMENTAL" role="doc" />
         <file name="LICENSE" role="doc" />
         <file name="README" role="doc" />
         <file name="config.m4" role="src" />
