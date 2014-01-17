@@ -1,13 +1,19 @@
 // $Id$
 // vim:ft=javascript
 
-// If your extension references something external, use ARG_WITH
-// ARG_WITH("appserver", "for appserver support", "no");
+var APPSERVER_EXT_NAME="appserver";
+var APPSERVER_EXT_SRC="appserver_llist.c";
+var APPSERVER_EXT_DIR="ext/appserver";
+var APPSERVER_EXT_API="appserver.c";
+var APPSERVER_EXT_FLAGS="/I" + configure_module_dirname;
 
-// Otherwise, use ARG_ENABLE
-ARG_ENABLE("appserver", "enable appserver support", "no");
+ARG_ENABLE("appserver", "Enable appserver support", "no");
 
 if (PHP_APPSERVER != "no") {
-    EXTENSION("appserver", "appserver.c appserver_llist.c");
+    if (CHECK_HEADER_ADD_INCLUDE("php_appserver.h", "CFLAGS_APPSERVER", PHP_APPSERVER + ";" + configure_module_dirname)) {
+        EXTENSION(APPSERVER_EXT_NAME, APPSERVER_EXT_API, PHP_APPSERVER_SHARED, APPSERVER_EXT_FLAGS);
+        ADD_SOURCES(APPSERVER_EXT_DIR, APPSERVER_EXT_SRC, APPSERVER_EXT_NAME);
+    } else {
+        WARNING("appserver support not enabled; headers not found");
+    }
 }
-
