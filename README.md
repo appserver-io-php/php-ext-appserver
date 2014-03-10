@@ -37,11 +37,10 @@ Registeres an uploaded file top super global hash table rfc1867_uploaded_files a
 If you want to reset the flag that headers already sent while runtime you can easly do it with this function by calling appserver_set_headers_sent(false);
 
 
+# Debug on Mac OS X
 
 Additionally it provides various functionality for usage within the 
 appserver.io runtime.
-
-# Debug on Mac OS X
 
 We're working with the [Eclipse IDE for C/C++](http://www.eclipse.org/downloads/packages/eclipse-ide-cc-developers/keplersr1), 
 which you can download from. As we provide some ANT targets that helps you to prepare 
