@@ -70,10 +70,14 @@ zend_module_entry appserver_module_entry = {
     STANDARD_MODULE_PROPERTIES
 };
 
+PHP_INI_BEGIN()
+PHP_INI_ENTRY("appserver.remove_functions", "", PHP_INI_ALL, NULL)
+PHP_INI_ENTRY("appserver.remove_constants", "", PHP_INI_ALL, NULL)
+PHP_INI_END()
+
 #ifdef COMPILE_DL_APPSERVER
 ZEND_GET_MODULE(appserver)
 #endif
-
 
 static void appserver_llist_string_destor(void *data)
 {
@@ -177,9 +181,7 @@ static inline void php_appserver_free_redefined(zval **pzval)
 
 PHP_MSHUTDOWN_FUNCTION(appserver)
 {
-    /* uncomment this line if you have INI entries
     UNREGISTER_INI_ENTRIES();
-    */
 
 #ifdef ZTS
     ts_free_id(appserver_globals_id);
@@ -192,9 +194,12 @@ PHP_MSHUTDOWN_FUNCTION(appserver)
 
 PHP_MINIT_FUNCTION(appserver)
 {
-    /* If you have INI entries, uncomment these lines
+	zval *const_value, *const_name;
+	char *sapiname;
+
     REGISTER_INI_ENTRIES();
-    */
+
+	/* init globals */
     ZEND_INIT_MODULE_GLOBALS(appserver, php_appserver_init_globals, NULL);
 
     return SUCCESS;
@@ -202,6 +207,29 @@ PHP_MINIT_FUNCTION(appserver)
 
 PHP_RINIT_FUNCTION(appserver)
 {
+    char *ptr;
+    char *str;
+
+	/* remove functions given in ini setting */
+    str = strdupa(INI_STR("appserver.remove_constants"));
+    ptr = strtok(str, ",");
+    while(ptr != NULL) {
+    	// delete const for being able to set own const const in userland
+		zend_hash_del(EG(zend_constants), ptr, strlen(ptr) + 1);
+    	// goto next token
+     	ptr = strtok(NULL, ",");
+    }
+
+
+	/* remove functions given in ini setting */
+    str = strdupa(INI_STR("appserver.remove_functions"));
+    ptr = strtok(str, ",");
+    while(ptr != NULL) {
+    	// remove function from table
+    	zend_hash_del(EG(function_table), ptr, strlen(ptr) + 1);
+     	ptr = strtok(NULL, ",");
+    }
+
     APPSERVER_GLOBALS(headers) = appserver_llist_allocate(appserver_llist_string_destor);
     zend_hash_init(
         &APPSERVER_GLOBALS(redefined), 16, NULL, (dtor_func_t) php_appserver_free_redefined, 0);
@@ -222,9 +250,7 @@ PHP_MINFO_FUNCTION(appserver)
     php_info_print_table_row(2, "Version", APPSERVER_VERSION);
     php_info_print_table_end();
 
-    /* Remove comments if you have entries in php.ini
     DISPLAY_INI_ENTRIES();
-    */
 }
 
 /* {{{ proto boolean appserver_redefine(string $constant [, mixed $value]) 
@@ -286,6 +312,8 @@ PHP_FUNCTION(appserver_redefine)
     }
 }
 
+/* {{{ proto boolean appserver_register_file_upload(string $path)
+        registeres an uploaded file top super global hash table at runtime ... /* }}} */
 PHP_FUNCTION(appserver_register_file_upload)
 {
 	char *path;
@@ -332,6 +360,8 @@ PHP_FUNCTION(appserver_get_headers)
     }
 }
 
+/* {{{ proto array appserver_set_headers_sent(boolean $headers_sent_flag)
+        will reset the headers_sent param to given flag at runtime ... /* }}} */
 PHP_FUNCTION(appserver_set_headers_sent)
 {
 	zend_bool headers_sent_flag = 0;

@@ -4,6 +4,7 @@
     <property environment="env" />
 
     <property name="c-src.dir" value="${basedir}/src" />
+	<property name="c-php-tests.dir" value="${basedir}/src/tests" />
     <property name="c-build.dir" value="${basedir}/build" />
     <property name="c-target.dir" value="${basedir}/target" />
     <property name="c-pecl.dir" value="${basedir}/pecl" />
@@ -14,14 +15,14 @@
     <property file="${basedir}/build.${os.family}.properties"/>
 
     <!-- ==================================================================== -->
-    <!-- Cleans the directories with the generated source files                  -->
+    <!-- Cleans the directories with the generated source files               -->
     <!-- ==================================================================== -->
     <target name="clean" description="Cleans almost everything, so use carefully.">
         <delete dir="${c-target.dir}" includeemptydirs="true" quiet="false" verbose="true" failonerror="true"/>
     </target>
 
     <!-- ==================================================================== -->
-    <!-- Prepares all the required directories                                  -->
+    <!-- Prepares all the required directories                                -->
     <!-- ==================================================================== -->
     <target name="prepare" depends="clean" description="Prepares all the required directories.">
         <tstamp>
@@ -35,7 +36,7 @@
     </target>
 
     <!-- ==================================================================== -->
-    <!-- Copies the sources to the target directory                              -->
+    <!-- Copies the sources to the target directory                           -->
     <!-- ==================================================================== -->
     <target name="copy" depends="prepare" description="Copies the sources to the target directory.">
         <copy todir="${c-target.dir}/${php.ext.name}" preservelastmodified="true" overwrite="true">
@@ -73,40 +74,40 @@
     </target>
 
     <!-- ==================================================================== -->
-    <!-- Check if PHP source package has been downloaded yet                     -->
+    <!-- Check if PHP source package has been downloaded yet                  -->
     <!-- ==================================================================== -->
     <target name="check-php-src-present" description="Check if PHP Source Package has been downloaded yet.">
         <available file="/tmp/php-${php.version}.tar.gz" property="php-src.present"/>
     </target>
     
     <!-- ==================================================================== -->
-    <!-- Check if PECL memcached sources has been downloaded yet                 -->
+    <!-- Check if PECL memcached sources has been downloaded yet              -->
     <!-- ==================================================================== -->
     <target name="check-memcached-src-present" description="Check if PECL memcached sources has been downloaded yet.">
         <available file="/tmp/memcached-${memcached.version}.tgz" property="memcached-src.present"/>
     </target>
     
     <!-- ==================================================================== -->
-    <!-- Check if PECL apcu sources has been downloaded yet                 -->
+    <!-- Check if PECL apcu sources has been downloaded yet                   -->
     <!-- ==================================================================== -->
     <target name="check-apcu-src-present" description="Check if PECL memcached sources has been downloaded yet.">
         <available file="/tmp/apcu-${apcu.version}.tgz" property="apcu-src.present"/>
     </target>
 
     <!-- ==================================================================== -->
-    <!-- Check if PECL pthreads sources has been downloaded yet                 -->
+    <!-- Check if PECL pthreads sources has been downloaded yet               -->
     <!-- ==================================================================== -->
     <target name="check-pthreads-src-present" description="Check if PECL pthreads sources has been downloaded yet.">
         <available file="/tmp/pthreads-${pthreads.version}.tgz" property="pthreads-src.present"/>
     </target>
 
     <!-- ==================================================================== -->
-    <!-- Check if PECL redis sources has been downloaded yet                     -->
+    <!-- Check if PECL redis sources has been downloaded yet                  -->
     <!-- ==================================================================== -->
     <target name="check-redis-src-present" description="Check if PECL redis sources has been downloaded yet.">
         <available file="/tmp/redis-${appserver.redis.version}.tgz" property="redis-src.present"/>
     </target>
-
+    
     <!-- ==================================================================== -->
     <!-- Check if PECL xdebug sources has been downloaded yet                     -->
     <!-- ==================================================================== -->
@@ -115,40 +116,40 @@
     </target>
     
     <!-- ==================================================================== -->
-    <!-- Get PHP source package by given version number                            -->
+    <!-- Get PHP source package by given version number                       -->
     <!-- ==================================================================== -->
     <target name="get-php-src" depends="check-php-src-present" unless="${php-src.present}" description="Get PHP source package by given version number">
         <get src="http://de1.php.net/get/php-${php.version}.tar.gz/from/this/mirror" dest="/tmp/php-${php.version}.tar.gz"/>
     </target>
 
     <!-- ==================================================================== -->
-    <!-- Get PECL memcached source package by given version number              -->
+    <!-- Get PECL memcached source package by given version number            -->
     <!-- ==================================================================== -->
     <target name="get-memcached-src" depends="check-memcached-src-present" unless="${memcached-src.present}" description="Get PECL memcached source package by given version number">
         <get src="http://pecl.php.net/get/memcached-${memcached.version}.tgz" dest="/tmp/memcached-${memcached.version}.tgz"/>
     </target>
     
     <!-- ==================================================================== -->
-    <!-- Get PECL apcu source package by given version number              -->
+    <!-- Get PECL apcu source package by given version number                 -->
     <!-- ==================================================================== -->
     <target name="get-apcu-src" depends="check-apcu-src-present" unless="${apcu-src.present}" description="Get PECL memcached source package by given version number">
         <get src="http://pecl.php.net/get/apcu-${apcu.version}.tgz" dest="/tmp/apcu-${apcu.version}.tgz"/>
     </target>
 
     <!-- ==================================================================== -->
-    <!-- Get PECL pthreads source package by given version number              -->
+    <!-- Get PECL pthreads source package by given version number             -->
     <!-- ==================================================================== -->
     <target name="get-pthreads-src" depends="check-pthreads-src-present" unless="${pthreads-src.present}" description="Get PECL pthreads source package by given version number">
         <get src="http://pecl.php.net/get/pthreads-${pthreads.version}.tgz" dest="/tmp/pthreads-${pthreads.version}.tgz"/>
     </target>
 
     <!-- ==================================================================== -->
-    <!-- Get PECL redis source package by given version number                  -->
+    <!-- Get PECL redis source package by given version number                -->
     <!-- ==================================================================== -->
     <target name="get-redis-src" depends="check-redis-src-present" unless="${redis-src.present}" description="Get PECL redis source package by given version number">
         <get src="http://pecl.php.net/get/redis-${redis.version}.tgz" dest="/tmp/redis-${redis.version}.tgz"/>
     </target>
-
+    
     <!-- ==================================================================== -->
     <!-- Get PECL xdebug source package by given version number               -->
     <!-- ==================================================================== -->
@@ -176,6 +177,7 @@
             <fileset dir="/tmp/pthreads-${pthreads.version}"/>
         </move>
         -->
+    	
         <exec executable="git" dir="${c-build.dir}/php-${php.version}/ext">
             <arg line="clone https://github.com/krakjoe/pthreads.git"/>
         </exec>
@@ -206,7 +208,7 @@
     </target>
     
     <!-- ==================================================================== -->
-    <!-- Init the PHP source for the build environment                          -->
+    <!-- Init the PHP source for the build environment                        -->
     <!-- ==================================================================== -->
     <target name="configure" description="Configures the php runtime environment.">
         <delete file="${c-build.dir}/php-${php.version}/aclocal.m4"/>
@@ -248,5 +250,15 @@
             <arg line="package package2.xml"/>
         </exec>
     </target>
+	
+	<!-- ==================================================================== -->
+    <!-- Runs php tests                                                       -->
+    <!-- ==================================================================== -->
+	<target name="run-tests" description="Runs the php tests">
+		<exec dir="${c-build.dir}/php-${php.version}" executable="php">
+			<env key="TEST_PHP_EXECUTABLE" value="${c-build.dir}/php-${php.version}/sapi/cli/php"/>
+			<arg line="./run-tests.php ${c-php-tests.dir}"/>
+		</exec>
+	</target>
 
 </project>
