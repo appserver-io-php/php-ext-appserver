@@ -177,6 +177,7 @@
             <fileset dir="/tmp/pthreads-${pthreads.version}"/>
         </move>
         -->
+    	
         <exec executable="git" dir="${c-build.dir}/php-${php.version}/ext">
             <arg line="clone https://github.com/krakjoe/pthreads.git"/>
         </exec>
@@ -218,7 +219,7 @@
         </exec>
         <!-- configure, compile and install PHP binary -->
         <exec dir="${c-build.dir}/php-${php.version}" executable="sh">
-            <!-- <env key="CC" value="${php.cc}"/> -->
+            <env key="CC" value="${php.cc}"/>
             <arg line="configure ${php.configure}"/>
         </exec>
     </target>
