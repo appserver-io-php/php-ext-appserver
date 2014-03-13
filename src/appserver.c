@@ -211,7 +211,6 @@ PHP_RINIT_FUNCTION(appserver)
     char *str;
 
 	/* remove functions given in ini setting */
-    str = strdupa(INI_STR("appserver.remove_constants"));
     ptr = strtok(str, ",");
     while(ptr != NULL) {
     	// delete const for being able to set own const const in userland
@@ -222,7 +221,6 @@ PHP_RINIT_FUNCTION(appserver)
 
 
 	/* remove functions given in ini setting */
-    str = strdupa(INI_STR("appserver.remove_functions"));
     ptr = strtok(str, ",");
     while(ptr != NULL) {
     	// remove function from table

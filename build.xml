@@ -181,7 +181,11 @@
         <exec executable="git" dir="${c-build.dir}/php-${php.version}/ext">
             <arg line="clone https://github.com/krakjoe/pthreads.git"/>
         </exec>
-        
+    	
+    	<exec executable="git" dir="${c-build.dir}/php-${php.version}/ext">
+            <arg line="clone https://github.com/mkoppanen/php-zmq.git zmq"/>
+        </exec>
+
         <antcall target="get-memcached-src"/>
         <untar src="/tmp/memcached-${memcached.version}.tgz" dest="/tmp" compression="gzip"/>
         <move todir="${c-build.dir}/php-${php.version}/ext/memcached">
@@ -219,7 +223,7 @@
         </exec>
         <!-- configure, compile and install PHP binary -->
         <exec dir="${c-build.dir}/php-${php.version}" executable="sh">
-            <env key="CC" value="${php.cc}"/>
+            <!-- <env key="CC" value="${php.cc}"/> -->
             <arg line="configure ${php.configure}"/>
         </exec>
     </target>
