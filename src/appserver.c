@@ -211,7 +211,7 @@ PHP_RINIT_FUNCTION(appserver)
     char *str;
 
 	/* remove functions given in ini setting */
-    ptr = strtok(str, ",");
+    ptr = strtok(INI_STR("appserver.remove_constants"), ",");
     while(ptr != NULL) {
     	// delete const for being able to set own const const in userland
 		zend_hash_del(EG(zend_constants), ptr, strlen(ptr) + 1);
@@ -221,7 +221,7 @@ PHP_RINIT_FUNCTION(appserver)
 
 
 	/* remove functions given in ini setting */
-    ptr = strtok(str, ",");
+    ptr = strtok(INI_STR("appserver.remove_functions"), ",");
     while(ptr != NULL) {
     	// remove function from table
     	zend_hash_del(EG(function_table), ptr, strlen(ptr) + 1);
