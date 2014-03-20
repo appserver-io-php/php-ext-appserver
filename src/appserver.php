@@ -19,8 +19,8 @@
  * @author      Johann Zelger <jz@techdivision.com>
  */
 
-appserver_redefine('PHP_SAPI', 'appserver');
-echo "CALL appserver_redefine('PHP_SAPI', 'appserver'): -> SAPI_TYPE: " . PHP_SAPI;
+define('PHP_SAPI', 'appserver');
+echo "Constant PHP_SAPI: -> SAPI_TYPE: " . PHP_SAPI;
 echo PHP_EOL . "==========================================". PHP_EOL;
 
 appserver_set_headers_sent(true);
