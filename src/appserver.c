@@ -71,6 +71,7 @@ zend_module_entry appserver_module_entry = {
 };
 
 PHP_INI_BEGIN()
+PHP_INI_ENTRY("appserver.php_sapi", "", PHP_INI_ALL, NULL)
 PHP_INI_ENTRY("appserver.remove_functions", "", PHP_INI_ALL, NULL)
 PHP_INI_ENTRY("appserver.remove_constants", "", PHP_INI_ALL, NULL)
 PHP_INI_END()
@@ -207,23 +208,25 @@ PHP_RINIT_FUNCTION(appserver)
     char *ptr, *str, *sapiconst = APPSERVER_CONSTANT_PHP_SAPI;
     zend_constant *defined;
     zval *new_phpsapi;
-    char *new_phpsapi_name = APPSERVER_SAPI_NAME;
+    char *new_phpsapi_name;
 
-    /* create zval for new sapi string */
-    MAKE_STD_ZVAL(new_phpsapi);
-    ZVAL_STRING(new_phpsapi, new_phpsapi_name, 1);
-
-    /* check if PHP_SAPI const can be found to overwrite cli sapi name to appserver */
-    if (zend_hash_find(EG(zend_constants), sapiconst, strlen(sapiconst)+1, (void **) &defined) == SUCCESS) {
-    	/* create new constant with new php sapi name */
-    	zend_constant c;
-		c.value = *new_phpsapi;
-		c.flags = PHP_USER_CONSTANT;
-		c.name = zend_strndup(&sapiconst, strlen(sapiconst));
-		c.name_len = strlen(sapiconst) + 1;
-		c.module_number = 0;
-    	/* update PHP_SAPI constant in hash table */
-    	zend_hash_update(EG(zend_constants), sapiconst, strlen(sapiconst)+1, (void*)&c, sizeof(zend_constant), (void **)&c);
+    if (INI_STR("appserver.php_sapi") != "") {
+    	new_phpsapi_name = INI_STR("appserver.php_sapi");
+    	/* check if PHP_SAPI const can be found to overwrite cli sapi name to appserver */
+		if (zend_hash_find(EG(zend_constants), sapiconst, strlen(sapiconst)+1, (void **) &defined) == SUCCESS) {
+		    /* create zval for new sapi string */
+		    MAKE_STD_ZVAL(new_phpsapi);
+		    ZVAL_STRING(new_phpsapi, new_phpsapi_name, 1);
+			/* create new constant with new php sapi name */
+			zend_constant c;
+			c.value = *new_phpsapi;
+			c.flags = PHP_USER_CONSTANT;
+			c.name = zend_strndup(&sapiconst, strlen(sapiconst));
+			c.name_len = strlen(sapiconst) + 1;
+			c.module_number = 0;
+			/* update PHP_SAPI constant in hash table */
+			zend_hash_update(EG(zend_constants), sapiconst, strlen(sapiconst)+1, (void*)&c, sizeof(zend_constant), (void **)&c);
+		}
     }
 
 	/* remove functions given in ini setting */
