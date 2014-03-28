@@ -12,7 +12,7 @@ server.
 The extension also allows you to remove functions and constants before the runtime has started up. So it's possible to write you own core functions (strlen, headers_sent) or modify some consts set by a sapi (PHP_SAPI) all in php userland.
 
 #####appserver.php_sapi
-This setting hold's a reset's the default PHP_SAPI to given value
+This setting reset's the default PHP_SAPI to given value
 
 ```
 appserver.php_sapi = appserver
