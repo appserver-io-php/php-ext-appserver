@@ -26,7 +26,9 @@ extern zend_module_entry appserver_module_entry;
 #define phpext_appserver_ptr &appserver_module_entry
 
 #define APPSERVER_NAME "${php.ext.name}"
+#define APPSERVER_SAPI_NAME "${php.sapi.name}"
 #define APPSERVER_VERSION "${release.version}"
+#define APPSERVER_CONSTANT_PHP_SAPI "PHP_SAPI"
 
 #ifdef PHP_WIN32
 #    define PHP_APPSERVER_API __declspec(dllexport)

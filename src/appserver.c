@@ -194,9 +194,6 @@ PHP_MSHUTDOWN_FUNCTION(appserver)
 
 PHP_MINIT_FUNCTION(appserver)
 {
-	zval *const_value, *const_name;
-	char *sapiname;
-
     REGISTER_INI_ENTRIES();
 
 	/* init globals */
@@ -207,8 +204,27 @@ PHP_MINIT_FUNCTION(appserver)
 
 PHP_RINIT_FUNCTION(appserver)
 {
-    char *ptr;
-    char *str;
+    char *ptr, *str, *sapiconst = APPSERVER_CONSTANT_PHP_SAPI;
+    zend_constant *defined;
+    zval *new_phpsapi;
+    char *new_phpsapi_name = APPSERVER_SAPI_NAME;
+
+    /* create zval for new sapi string */
+    MAKE_STD_ZVAL(new_phpsapi);
+    ZVAL_STRING(new_phpsapi, new_phpsapi_name, 1);
+
+    /* check if PHP_SAPI const can be found to overwrite cli sapi name to appserver */
+    if (zend_hash_find(EG(zend_constants), sapiconst, strlen(sapiconst)+1, (void **) &defined) == SUCCESS) {
+    	/* create new constant with new php sapi name */
+    	zend_constant c;
+		c.value = *new_phpsapi;
+		c.flags = PHP_USER_CONSTANT;
+		c.name = zend_strndup(&sapiconst, strlen(sapiconst));
+		c.name_len = strlen(sapiconst) + 1;
+		c.module_number = 0;
+    	/* update PHP_SAPI constant in hash table */
+    	zend_hash_update(EG(zend_constants), sapiconst, strlen(sapiconst)+1, (void*)&c, sizeof(zend_constant), (void **)&c);
+    }
 
 	/* remove functions given in ini setting */
     ptr = strtok(INI_STR("appserver.remove_constants"), ",");
@@ -218,7 +234,6 @@ PHP_RINIT_FUNCTION(appserver)
     	// goto next token
      	ptr = strtok(NULL, ",");
     }
-
 
 	/* remove functions given in ini setting */
     ptr = strtok(INI_STR("appserver.remove_functions"), ",");

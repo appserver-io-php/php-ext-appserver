@@ -29,14 +29,23 @@ xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0 http://pear.php.net/dtd/ta
 <notes>version-release</notes>
 <contents>
     <dir name="/">
-        <file name="LICENSE" role="doc" />
-        <file name="README" role="doc" />
-        <file name="config.m4" role="src" />
-        <file name="config.w32" role="src" />
-        <file name="appserver.c" role="src" />
-        <file name="php_appserver.h" role="src" />
-        <file name="appserver_llist.c" role="src" />
-        <file name="appserver_llist.h" role="src" />
+        <file name="LICENSE" role="doc"/>
+        <file name="README" role="doc"/>
+        <file name="config.m4" role="src"/>
+        <file name="config.w32" role="src"/>
+        <file name="appserver.c" role="src"/>
+        <file name="php_appserver.h" role="src"/>
+        <file name="appserver_llist.c" role="src"/>
+        <file name="appserver_llist.h" role="src"/>
+        <file name="tests/appserver_001.phpt" role="test"/>
+        <file name="tests/appserver_002.phpt" role="test"/>
+        <file name="tests/appserver_003.phpt" role="test"/>
+        <file name="tests/appserver_004.phpt" role="test"/>
+        <file name="tests/appserver_005.phpt" role="test"/>
+        <file name="tests/appserver_006.phpt" role="test"/>
+        <file name="tests/appserver_007.phpt" role="test"/>
+        <file name="tests/appserver_008.phpt" role="test"/>
+        <file name="tests/appserver_009.phpt" role="test"/>
     </dir>
 </contents>
 <dependencies>
