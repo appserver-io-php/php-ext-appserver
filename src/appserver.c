@@ -208,7 +208,6 @@ PHP_RINIT_FUNCTION(appserver)
 {
     char *ptr, *str, *sapiconst = APPSERVER_CONSTANT_PHP_SAPI;
     zend_constant *defined;
-    zval *new_phpsapi;
     char *new_phpsapi_name;
 
     if (INI_STR("appserver.php_sapi") != "") {
