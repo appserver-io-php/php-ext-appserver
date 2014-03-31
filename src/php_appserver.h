@@ -71,6 +71,7 @@ PHP_FUNCTION(appserver_get_headers);
 PHP_FUNCTION(appserver_register_file_upload);
 PHP_FUNCTION(appserver_set_headers_sent);
 PHP_FUNCTION(appserver_redefine);
+PHP_FUNCTION(appserver_set_raw_post_data);
 
 ZEND_BEGIN_MODULE_GLOBALS(appserver)
     appserver_llist         *headers;

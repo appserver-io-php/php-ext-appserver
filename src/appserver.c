@@ -54,6 +54,7 @@ const zend_function_entry appserver_functions[] = {
     PHP_FE(appserver_register_file_upload, NULL)
     PHP_FE(appserver_set_headers_sent, NULL)
     PHP_FE(appserver_redefine, NULL)
+    PHP_FE(appserver_set_raw_post_data, NULL)
     PHP_FE_END
 };
 
@@ -207,25 +208,16 @@ PHP_RINIT_FUNCTION(appserver)
 {
     char *ptr, *str, *sapiconst = APPSERVER_CONSTANT_PHP_SAPI;
     zend_constant *defined;
-    zval *new_phpsapi;
     char *new_phpsapi_name;
 
     if (INI_STR("appserver.php_sapi") != "") {
     	new_phpsapi_name = INI_STR("appserver.php_sapi");
     	/* check if PHP_SAPI const can be found to overwrite cli sapi name to appserver */
 		if (zend_hash_find(EG(zend_constants), sapiconst, strlen(sapiconst)+1, (void **) &defined) == SUCCESS) {
-		    /* create zval for new sapi string */
-		    MAKE_STD_ZVAL(new_phpsapi);
-		    ZVAL_STRING(new_phpsapi, new_phpsapi_name, 1);
-			/* create new constant with new php sapi name */
-			zend_constant c;
-			c.value = *new_phpsapi;
-			c.flags = PHP_USER_CONSTANT;
-			c.name = zend_strndup(&sapiconst, strlen(sapiconst));
-			c.name_len = strlen(sapiconst) + 1;
-			c.module_number = 0;
-			/* update PHP_SAPI constant in hash table */
-			zend_hash_update(EG(zend_constants), sapiconst, strlen(sapiconst)+1, (void*)&c, sizeof(zend_constant), (void **)&c);
+		    /* delete old hash entry */
+			zend_hash_del(EG(zend_constants), sapiconst, strlen(sapiconst)+1);
+			/* register new constant with new php sapi name */
+			zend_register_string_constant(sapiconst, strlen(sapiconst)+1, new_phpsapi_name, CONST_CS | CONST_PERSISTENT, 0 TSRMLS_CC);
 		}
     }
 
@@ -267,6 +259,24 @@ PHP_MINFO_FUNCTION(appserver)
     php_info_print_table_end();
 
     DISPLAY_INI_ENTRIES();
+}
+
+/* {{{ proto boolean appserver_set_raw_post_data(string $postData)
+ 	 	 sets the raw post data to be available in php://input stream */
+PHP_FUNCTION(appserver_set_raw_post_data)
+{
+    char *postData;
+    zend_uint postData_len;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &postData, &postData_len) == FAILURE) {
+        return;
+    }
+
+    /* set to $HTTP_RAW_POST_DATA var */
+    SET_VAR_STRINGL("HTTP_RAW_POST_DATA", estrndup(postData, postData_len), postData_len);
+    /* set to php://input */
+    SG(request_info).raw_post_data = estrndup(postData, postData_len);
+    SG(request_info).raw_post_data_length = postData_len;
 }
 
 /* {{{ proto boolean appserver_redefine(string $constant [, mixed $value]) 

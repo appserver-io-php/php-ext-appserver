@@ -6,9 +6,7 @@ Johann Zelger <jz [at] techdivision [dot] com>
 appserver.php_sapi=appserver
 --FILE--
 <?php
-
-echo PHP_SAPI . "\r\n";
-
+var_dump(PHP_SAPI);
 ?>
 --EXPECT--
-appserver
+string(9) "appserver"
