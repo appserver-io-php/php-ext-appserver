@@ -43,8 +43,6 @@ Registeres an uploaded file top super global hash table rfc1867_uploaded_files a
 #####appserver_set_headers_sent(boolean $sent)
 If you want to reset the flag that headers already sent while runtime you can easly do it with this function by calling appserver_set_headers_sent(false);
 
-#####appserver_set_raw_post_data(string $postData)
-To have the raw post data available in php://input you can simple use this function. I'll be available in $HTTP_RAW_POST_DATA too.
 
 # Debug on Mac OS X
 
