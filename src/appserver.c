@@ -55,6 +55,7 @@ const zend_function_entry appserver_functions[] = {
     PHP_FE(appserver_set_headers_sent, NULL)
     PHP_FE(appserver_redefine, NULL)
     PHP_FE(appserver_set_raw_post_data, NULL)
+    PHP_FE(appserver_get_http_response_code, NULL)
     PHP_FE_END
 };
 
@@ -259,6 +260,16 @@ PHP_MINFO_FUNCTION(appserver)
     php_info_print_table_end();
 
     DISPLAY_INI_ENTRIES();
+}
+
+/* {{{ proto boolean appserver_get_http_response_code()
+ 	 	 gets the http response code if is set in sapi_headers hash table */
+PHP_FUNCTION(appserver_get_http_response_code)
+{
+	if (SG(sapi_headers).http_response_code) {
+		RETURN_LONG(SG(sapi_headers).http_response_code);
+	}
+	RETURN_NULL();
 }
 
 /* {{{ proto boolean appserver_set_raw_post_data(string $postData)

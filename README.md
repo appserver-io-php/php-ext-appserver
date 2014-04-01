@@ -46,6 +46,9 @@ If you want to reset the flag that headers already sent while runtime you can ea
 #####appserver_set_raw_post_data(string $postData)
 To have the raw post data available in php://input you can simple use this function. I'll be available in $HTTP_RAW_POST_DATA too.
 
+#####appserver_get_http_response_code()
+Gets the http response code if is set in sapi_headers hash table.
+
 # Debug on Mac OS X
 
 Additionally it provides various functionality for usage within the 
