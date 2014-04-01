@@ -4,6 +4,7 @@
 /build.properties
 .DS_Store
 .README.md.html
+/README.md~
 /.cproject
 /.buildpath
 /.project
