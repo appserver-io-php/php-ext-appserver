@@ -56,6 +56,7 @@ const zend_function_entry appserver_functions[] = {
     PHP_FE(appserver_redefine, NULL)
     PHP_FE(appserver_set_raw_post_data, NULL)
     PHP_FE(appserver_get_http_response_code, NULL)
+    PHP_FE(appserver_get_envs, NULL)
     PHP_FE_END
 };
 
@@ -260,6 +261,28 @@ PHP_MINFO_FUNCTION(appserver)
     php_info_print_table_end();
 
     DISPLAY_INI_ENTRIES();
+}
+
+/* {{{ proto boolean appserver_get_envs()
+ 	 	 Returns an array of all defined environmental variables set by system or using putenv */
+PHP_FUNCTION(appserver_get_envs)
+{
+	char **env, *tmp1, *tmp2;
+
+	/* init return value as array */
+	array_init(return_value);
+	/* iterate all envs and build up array */
+	for (env=environ; env!=NULL && *env !=NULL; env++) {
+		tmp1 = estrdup(*env);
+		if (!(tmp2=strchr(tmp1,'='))) { /* malformed entry? */
+			efree(tmp1);
+			continue;
+		}
+		*tmp2 = 0;
+		tmp2++;
+		add_assoc_string(return_value, tmp1, tmp2, 1);
+		efree(tmp1);
+	}
 }
 
 /* {{{ proto boolean appserver_get_http_response_code()
