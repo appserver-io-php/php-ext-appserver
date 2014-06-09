@@ -306,11 +306,27 @@ PHP_FUNCTION(appserver_set_raw_post_data)
         return;
     }
 
+/* removed raw_post_data in php-5.6.x */
+#if ZEND_MODULE_API_NO >= 20131226
+    /* create stream if not exists yes */
+    if (!SG(request_info).request_body) {
+    	SG(request_info).request_body = php_stream_temp_create(TEMP_STREAM_DEFAULT, SAPI_POST_BLOCK_SIZE);
+    }
+    /* write given post data to stream */
+	php_stream_write(SG(request_info).request_body, postData, postData_len);
+	/* rewind it for further processing */
+	php_stream_rewind(SG(request_info).request_body);
+	/* make old var $HTTP_RAW_POST_DATA available */
+	SET_VAR_STRINGL("HTTP_RAW_POST_DATA", estrndup(postData, postData_len), postData_len);
+
+#else
     /* set to $HTTP_RAW_POST_DATA var */
     SET_VAR_STRINGL("HTTP_RAW_POST_DATA", estrndup(postData, postData_len), postData_len);
     /* set to php://input */
     SG(request_info).raw_post_data = estrndup(postData, postData_len);
     SG(request_info).raw_post_data_length = postData_len;
+#endif
+
 }
 
 /* {{{ proto boolean appserver_redefine(string $constant [, mixed $value]) 
