@@ -119,7 +119,7 @@
     <!-- Get PHP source package by given version number                       -->
     <!-- ==================================================================== -->
     <target name="get-php-src" depends="check-php-src-present" unless="${php-src.present}" description="Get PHP source package by given version number">
-        <get src="http://de1.php.net/get/php-${php.version}.tar.gz/from/this/mirror" dest="/tmp/php-${php.version}.tar.gz"/>
+        <get src="${php.downloadurl}" dest="/tmp/php-${php.version}.tar.gz"/>
     </target>
 
     <!-- ==================================================================== -->
@@ -161,6 +161,8 @@
     <!-- Prepares the PHP sources for the runtime                             -->
     <!-- ==================================================================== -->
     <target name="prepare-source" depends="prepare" description="Prepares the PHP sources for the runtime.">
+    	<delete dir="${c-build.dir}/php-{php.version}" includeemptydirs="true" quiet="false" verbose="false" failonerror="false"/>  	
+    	
     	<!-- prepare PHP sources -->
         <antcall target="get-php-src"/>
         <untar src="/tmp/php-${php.version}.tar.gz" dest="${c-build.dir}" compression="gzip"/>
@@ -171,7 +173,7 @@
         </chmod>
     	
     	<!-- recreate symlink -->
-    	<delete file="${c-build.dir}/php" followsymlinks="false" removenotfollowedsymlinks="true" />
+    	<symlink link="${c-build.dir}/php" action="delete"/>
     	<symlink link="${c-build.dir}/php" resource="${c-build.dir}/php-${php.version}"/>
         
         <antcall target="get-pthreads-src"/>
@@ -180,17 +182,11 @@
             <fileset dir="/tmp/pthreads-${pthreads.version}"/>
         </move>
     	
-    	<!-- pthreads head
+    	<!-- activate to fetch pthreads head instead of given version in properties file
         <exec executable="git" dir="${c-build.dir}/php/ext">
             <arg line="clone https://github.com/krakjoe/pthreads.git"/>
         </exec>
     	-->
-    	
-    	<!-- zmq head
-    	<exec executable="git" dir="${c-build.dir}/php/ext">
-            <arg line="clone https://github.com/mkoppanen/php-zmq.git zmq"/>
-        </exec>
-        -->
 
         <antcall target="get-memcached-src"/>
         <untar src="/tmp/memcached-${memcached.version}.tgz" dest="/tmp" compression="gzip"/>
@@ -245,8 +241,7 @@
     <!-- Inits the build source for PHP                                       -->
     <!-- ==================================================================== -->
     <target name="init-build" description="Init the php build environment.">
-        <delete dir="${c-build.dir}" includeemptydirs="true" quiet="false" verbose="false" failonerror="true"/>
-        <antcall target="prepare-source"/>
+    	<antcall target="prepare-source"/>
         <antcall target="deploy"/>
         <antcall target="configure"/>
         <antcall target="make"/>
