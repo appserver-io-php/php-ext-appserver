@@ -19,44 +19,6 @@
  * @author      Johann Zelger <jz@techdivision.com>
  */
 
-class Universe
-{
-	public function injectObj($obj)
-	{
-		$this->obj = $obj;
-	}
-}
-
-class World
-{
-	public function injectObj($obj)
-	{
-		$this->obj = $obj;
-	}
-}
-
-class TestThread extends Thread
-{
-	public function __construct($obj)
-	{
-		$this->obj = $obj;
-	}
-
-	public function run()
-	{
-		$obj = $this->obj;
-	}
-}
-
-$universe = new Universe();
-$world = new World();
-
-$universe->injectObj($world);
-$world->injectObj($universe);
-
-$testThread = new TestThread($universe);
-$testThread->start();
-
 define('PHP_SAPI', 'appserver');
 echo "Constant PHP_SAPI: -> SAPI_TYPE: " . PHP_SAPI;
 echo PHP_EOL . "==========================================". PHP_EOL;
