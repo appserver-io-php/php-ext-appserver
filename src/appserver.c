@@ -335,7 +335,6 @@ PHP_FUNCTION(appserver_set_raw_post_data)
         init session state at runtime ... /* }}} */
 PHP_FUNCTION(appserver_session_init)
 {
-
 	if (PS(http_session_vars)) {
 		zval_ptr_dtor(&PS(http_session_vars));
 		PS(http_session_vars) = NULL;
