@@ -355,6 +355,12 @@ PHP_FUNCTION(appserver_session_init)
 	PS(mod_user_is_open) = 0;
 	/* Do NOT init PS(mod_user_names) here! */
 	PS(http_session_vars) = NULL;
+
+	/* update SESSION global and set it NULL */
+	zval *nullVal;
+	ALLOC_INIT_ZVAL(nullVal);
+	Z_TYPE_P(nullVal) = IS_NULL;
+	zend_hash_update(&EG(symbol_table), "_SESSION", strlen("_SESSION") + 1, &nullVal, sizeof(zval *), NULL);
 }
 
 /* {{{ proto boolean appserver_redefine(string $constant [, mixed $value]) 
