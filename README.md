@@ -49,6 +49,9 @@ To have the raw post data available in php://input you can simple use this funct
 #####appserver_get_http_response_code()
 Gets the http response code if is set in sapi_headers hash table.
 
+#####appserver_session_init()
+Resets the whole session environment while in process runtime. It's needed when you what to use internal session_start() functionality in a multithreaded daemon process.
+
 # Debug on Mac OS X
 
 Additionally it provides various functionality for usage within the 
