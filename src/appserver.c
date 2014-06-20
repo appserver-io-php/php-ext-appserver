@@ -26,6 +26,7 @@
 #include "php.h"
 #include "php_ini.h"
 #include "ext/standard/info.h"
+#include "ext/session/php_session.h"
 #include "php_appserver.h"
 #include "TSRM.h"
 #include "SAPI.h"
@@ -57,6 +58,7 @@ const zend_function_entry appserver_functions[] = {
     PHP_FE(appserver_set_raw_post_data, NULL)
     PHP_FE(appserver_get_http_response_code, NULL)
     PHP_FE(appserver_get_envs, NULL)
+    PHP_FE(appserver_session_init, NULL)
     PHP_FE_END
 };
 
@@ -327,6 +329,33 @@ PHP_FUNCTION(appserver_set_raw_post_data)
     SG(request_info).raw_post_data_length = postData_len;
 #endif
 
+}
+
+/* {{{ proto boolean appserver_session_init()
+        init session state at runtime ... /* }}} */
+PHP_FUNCTION(appserver_session_init)
+{
+
+	if (PS(http_session_vars)) {
+		zval_ptr_dtor(&PS(http_session_vars));
+		PS(http_session_vars) = NULL;
+	}
+	/* Do NOT destroy PS(mod_user_names) here! */
+	if (PS(mod_data) || PS(mod_user_implemented)) {
+		zend_try {
+			PS(mod)->s_close(&PS(mod_data) TSRMLS_CC);
+		} zend_end_try();
+	}
+	if (PS(id)) {
+		efree(PS(id));
+	}
+
+	PS(id) = NULL;
+	PS(session_status) = php_session_none;
+	PS(mod_data) = NULL;
+	PS(mod_user_is_open) = 0;
+	/* Do NOT init PS(mod_user_names) here! */
+	PS(http_session_vars) = NULL;
 }
 
 /* {{{ proto boolean appserver_redefine(string $constant [, mixed $value]) 
