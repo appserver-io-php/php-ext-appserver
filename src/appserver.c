@@ -337,6 +337,8 @@ PHP_FUNCTION(appserver_set_raw_post_data)
         init session state at runtime ... /* }}} */
 PHP_FUNCTION(appserver_session_init)
 {
+	zval *nullVal;
+
 	if (PS(http_session_vars)) {
 		zval_ptr_dtor(&PS(http_session_vars));
 		PS(http_session_vars) = NULL;
@@ -359,7 +361,6 @@ PHP_FUNCTION(appserver_session_init)
 	PS(http_session_vars) = NULL;
 
 	/* update SESSION global and set it NULL */
-	zval *nullVal;
 	ALLOC_INIT_ZVAL(nullVal);
 	Z_TYPE_P(nullVal) = IS_NULL;
 	zend_hash_update(&EG(symbol_table), "_SESSION", strlen("_SESSION") + 1, &nullVal, sizeof(zval *), NULL);
