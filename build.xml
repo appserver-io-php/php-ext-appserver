@@ -271,7 +271,7 @@
 	</target>
 	
 	<!-- ==================================================================== -->
-    <!-- Runs php tests                                                       -->
+    <!-- Runs php tests in verbose mode to show all testing relevant info     -->
     <!-- ==================================================================== -->
 	<target name="run-tests-verbose" description="Runs the php tests">
 		<exec dir="${c-build.dir}/php" executable="php">
