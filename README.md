@@ -52,6 +52,9 @@ Gets the http response code if is set in sapi_headers hash table.
 #####appserver_session_init()
 Resets the whole session environment while in process runtime. It's needed when you what to use internal session_start() functionality in a multithreaded daemon process.
 
+#####appserver_stream_import_file_descriptor(resource $streamResource)
+It will return the file descriptor as userland int of a php stream resource. So you have the possibility to reopen any open stream socket fd with fopen('php://fd/XX'); in any context.
+
 # Debug on Mac OS X
 
 Additionally it provides various functionality for usage within the 
