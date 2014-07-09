@@ -27,6 +27,7 @@
 #include "php_ini.h"
 #include "ext/standard/info.h"
 #include "ext/session/php_session.h"
+#include "ext/sockets/php_sockets.h"
 #include "php_appserver.h"
 #include "TSRM.h"
 #include "SAPI.h"
@@ -59,6 +60,7 @@ const zend_function_entry appserver_functions[] = {
     PHP_FE(appserver_get_http_response_code, NULL)
     PHP_FE(appserver_get_envs, NULL)
     PHP_FE(appserver_session_init, NULL)
+    PHP_FE(appserver_stream_import_file_descriptor, NULL)
     PHP_FE_END
 };
 
@@ -484,6 +486,28 @@ PHP_FUNCTION(appserver_set_headers_sent)
 	SG(headers_sent) = headers_sent_flag;
 }
 
+/* {{{ proto array appserver_stream_import_file_descriptor(resource $socket)
+        will return the file descriptor as int of a php stream resource ... /* }}} */
+PHP_FUNCTION(appserver_stream_import_file_descriptor)
+{
+	zval *zstream;
+	php_stream *stream;
+	PHP_SOCKET socket; /* fd */
+
+	/* parse params and get stream resources passed to function */
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &zstream) == FAILURE) {
+		return;
+	}
+	/* get stream from given php userland zval */
+	php_stream_from_zval(stream, &zstream);
+	/* check if stream can be casted to a socket fd */
+	if (php_stream_cast(stream, PHP_STREAM_AS_SOCKETD, (void**)&socket, 1)) {
+		/* return a negative long to declair a non existent fd */
+		RETURN_LONG(-1);
+	}
+	/* finally return the fd as long to userland*/
+	RETURN_LONG(socket)
+}
 
 // ---------------------------------------------------------------------------
 // Zend Extension Functions

@@ -64,3 +64,19 @@ foreach ($temp_filenames as $index => $temp_filename) {
     echo "CALL #$index move_uploaded_file: -> " .var_export(move_uploaded_file($temp_filename, '/tmp/move_uploaded_file_success'), true);
     echo PHP_EOL . "==========================================". PHP_EOL;
 }
+
+$streamServer = stream_socket_server('tcp://127.0.0.1:31337');
+$streamClient = fsockopen('tcp://127.0.0.1:31337');
+if (!$streamClient) {
+	die("Unable to create socket");
+}
+$streamConnection = stream_socket_accept($streamServer);
+echo 'CALL appserver_stream_import_file_descriptor($streamServer): -> ';
+echo var_export(appserver_stream_import_file_descriptor($streamServer), true);
+echo PHP_EOL . "==========================================". PHP_EOL;
+echo 'CALL appserver_stream_import_file_descriptor($streamClient): -> ';
+echo var_export(appserver_stream_import_file_descriptor($streamClient), true);
+echo PHP_EOL . "==========================================". PHP_EOL;
+echo 'CALL appserver_stream_import_file_descriptor($streamConnection): -> ';
+echo var_export(appserver_stream_import_file_descriptor($streamConnection), true);
+echo PHP_EOL . "==========================================". PHP_EOL;
