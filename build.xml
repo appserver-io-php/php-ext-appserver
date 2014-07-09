@@ -186,7 +186,11 @@
         <exec executable="git" dir="${c-build.dir}/php/ext">
             <arg line="clone https://github.com/krakjoe/pthreads.git"/>
         </exec>
-    	-->
+    	
+    	<exec executable="git" dir="${c-build.dir}/php/ext">
+            <arg line="clone https://github.com/krakjoe/uopz.git"/>
+        </exec>
+         -->
 
         <antcall target="get-memcached-src"/>
         <untar src="/tmp/memcached-${memcached.version}.tgz" dest="/tmp" compression="gzip"/>
@@ -263,6 +267,16 @@
 		<exec dir="${c-build.dir}/php" executable="php">
 			<env key="TEST_PHP_EXECUTABLE" value="${c-build.dir}/php/sapi/cli/php"/>
 			<arg line="./run-tests.php ${c-php-tests.dir}"/>
+		</exec>
+	</target>
+	
+	<!-- ==================================================================== -->
+    <!-- Runs php tests in verbose mode to show all testing relevant info     -->
+    <!-- ==================================================================== -->
+	<target name="run-tests-verbose" description="Runs the php tests">
+		<exec dir="${c-build.dir}/php" executable="php">
+			<env key="TEST_PHP_EXECUTABLE" value="${c-build.dir}/php/sapi/cli/php"/>
+			<arg line="./run-tests.php --show-all ${c-php-tests.dir}"/>
 		</exec>
 	</target>
 

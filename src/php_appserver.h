@@ -75,6 +75,7 @@ PHP_FUNCTION(appserver_set_raw_post_data);
 PHP_FUNCTION(appserver_get_http_response_code);
 PHP_FUNCTION(appserver_get_envs);
 PHP_FUNCTION(appserver_session_init);
+PHP_FUNCTION(appserver_stream_import_file_descriptor);
 
 ZEND_BEGIN_MODULE_GLOBALS(appserver)
     appserver_llist         *headers;
