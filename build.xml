@@ -4,7 +4,7 @@
     <property environment="env" />
 
     <property name="c-src.dir" value="${basedir}/src" />
-	<property name="c-php-tests.dir" value="${basedir}/src/tests" />
+    <property name="c-php-tests.dir" value="${basedir}/src/tests" />
     <property name="c-build.dir" value="${basedir}/build" />
     <property name="c-target.dir" value="${basedir}/target" />
     <property name="c-pecl.dir" value="${basedir}/pecl" />
@@ -156,14 +156,14 @@
     <target name="get-xdebug-src" depends="check-xdebug-src-present" unless="${xdebug-src.present}" description="Get PECL xdebug source package by given version number">
         <get src="http://pecl.php.net/get/xdebug-${xdebug.version}.tgz" dest="/tmp/xdebug-${xdebug.version}.tgz"/>
     </target>
-	
+    
     <!-- ==================================================================== -->
     <!-- Prepares the PHP sources for the runtime                             -->
     <!-- ==================================================================== -->
     <target name="prepare-source" depends="prepare" description="Prepares the PHP sources for the runtime.">
-    	<delete dir="${c-build.dir}/php-{php.version}" includeemptydirs="true" quiet="false" verbose="false" failonerror="false"/>  	
-    	
-    	<!-- prepare PHP sources -->
+        <delete dir="${c-build.dir}/php-{php.version}" includeemptydirs="true" quiet="false" verbose="false" failonerror="false"/>
+        
+        <!-- prepare PHP sources -->
         <antcall target="get-php-src"/>
         <untar src="/tmp/php-${php.version}.tar.gz" dest="${c-build.dir}" compression="gzip"/>
         <chmod perm="755">
@@ -171,23 +171,23 @@
                 <include name="**/*"/>
             </fileset>
         </chmod>
-    	
-    	<!-- recreate symlink -->
-    	<symlink link="${c-build.dir}/php" action="delete"/>
-    	<symlink link="${c-build.dir}/php" resource="${c-build.dir}/php-${php.version}"/>
+        
+        <!-- recreate symlink -->
+        <symlink link="${c-build.dir}/php" action="delete"/>
+        <symlink link="${c-build.dir}/php" resource="${c-build.dir}/php-${php.version}"/>
         
         <antcall target="get-pthreads-src"/>
         <untar src="/tmp/pthreads-${pthreads.version}.tgz" dest="/tmp" compression="gzip"/>
         <move todir="${c-build.dir}/php/ext/pthreads">
             <fileset dir="/tmp/pthreads-${pthreads.version}"/>
         </move>
-    	
-    	<!-- activate to fetch pthreads head instead of given version in properties file
+        
+        <!-- activate to fetch pthreads head instead of given version in properties file
         <exec executable="git" dir="${c-build.dir}/php/ext">
             <arg line="clone https://github.com/krakjoe/pthreads.git"/>
         </exec>
-    	
-    	<exec executable="git" dir="${c-build.dir}/php/ext">
+        
+        <exec executable="git" dir="${c-build.dir}/php/ext">
             <arg line="clone https://github.com/krakjoe/uopz.git"/>
         </exec>
          -->
@@ -216,7 +216,7 @@
             <fileset dir="/tmp/xdebug-${xdebug.version}"/>
         </move>
     </target>
-	
+    
     <!-- ==================================================================== -->
     <!-- Init the PHP source for the build environment                        -->
     <!-- ==================================================================== -->
@@ -239,25 +239,34 @@
     <!-- ==================================================================== -->
     <target name="make" description="Compiles the php runtime environment.">
         <exec dir="${c-build.dir}/php" executable="make">
-        	<arg line="-j6"/>
-    	</exec>
+            <arg line="-j6"/>
+            </exec>
+    </target>
+    
+    <!-- ==================================================================== -->
+    <!-- Installs the builded php for the PHP build runtime                   -->
+    <!-- ==================================================================== -->
+    <target name="make-install" description="Installes the php build internally">
+        <exec dir="${c-build.dir}/php" executable="make">
+            <arg line="install"/>
+        </exec>
     </target>
     
     <!-- ==================================================================== -->
     <!-- Inits the build source for PHP                                       -->
     <!-- ==================================================================== -->
     <target name="init-build" description="Init the php build environment.">
-    	<antcall target="prepare-source"/>
+        <antcall target="prepare-source"/>
         <antcall target="deploy"/>
         <antcall target="configure"/>
         <antcall target="make"/>
-    	<chmod perm="+x">
+        <chmod perm="+x">
             <fileset dir="${c-build.dir}/php-${php.version}/scripts">
                 <include name="**/*"/>
             </fileset>
         </chmod>
     </target>
-	
+    
     <!-- ==================================================================== -->
     <!-- Creates a pecl package                                               -->
     <!-- ==================================================================== -->
@@ -266,25 +275,25 @@
             <arg line="package package2.xml"/>
         </exec>
     </target>
-	
-	<!-- ==================================================================== -->
+    
+    <!-- ==================================================================== -->
     <!-- Runs php tests                                                       -->
     <!-- ==================================================================== -->
-	<target name="run-tests" description="Runs the php tests">
-		<exec dir="${c-build.dir}/php" executable="php">
-			<env key="TEST_PHP_EXECUTABLE" value="${c-build.dir}/php/sapi/cli/php"/>
-			<arg line="./run-tests.php ${c-php-tests.dir}"/>
-		</exec>
-	</target>
-	
-	<!-- ==================================================================== -->
+    <target name="run-tests" description="Runs the php tests">
+        <exec dir="${c-build.dir}/php" executable="php">
+            <env key="TEST_PHP_EXECUTABLE" value="${c-build.dir}/php/sapi/cli/php"/>
+            <arg line="./run-tests.php ${c-php-tests.dir}"/>
+        </exec>
+    </target>
+    
+    <!-- ==================================================================== -->
     <!-- Runs php tests in verbose mode to show all testing relevant info     -->
     <!-- ==================================================================== -->
-	<target name="run-tests-verbose" description="Runs the php tests">
-		<exec dir="${c-build.dir}/php" executable="php">
-			<env key="TEST_PHP_EXECUTABLE" value="${c-build.dir}/php/sapi/cli/php"/>
-			<arg line="./run-tests.php --show-all ${c-php-tests.dir}"/>
-		</exec>
-	</target>
+    <target name="run-tests-verbose" description="Runs the php tests">
+        <exec dir="${c-build.dir}/php" executable="php">
+            <env key="TEST_PHP_EXECUTABLE" value="${c-build.dir}/php/sapi/cli/php"/>
+            <arg line="./run-tests.php --show-all ${c-php-tests.dir}"/>
+        </exec>
+    </target>
 
 </project>
