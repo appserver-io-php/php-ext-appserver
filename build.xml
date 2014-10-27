@@ -12,7 +12,7 @@
     <property file="${user.home}/build.properties"/>
     <property file="${basedir}/build.properties"/>
     <property file="${basedir}/build.default.properties"/>
-    <property file="${basedir}/build.${os.family}.properties"/>
+    <property file="${basedir}/build.${os.name}.properties"/>
 
     <!-- ==================================================================== -->
     <!-- Cleans the directories with the generated source files               -->
@@ -61,7 +61,7 @@
             </filterchain>
         </copy>
     </target>
-    
+
     <!-- ==================================================================== -->
     <!-- Copies the sources to the deploy directory                           -->
     <!-- ==================================================================== -->
@@ -216,7 +216,7 @@
             <fileset dir="/tmp/xdebug-${xdebug.version}"/>
         </move>
     </target>
-    
+	
     <!-- ==================================================================== -->
     <!-- Init the PHP source for the build environment                        -->
     <!-- ==================================================================== -->
@@ -230,7 +230,7 @@
         <!-- configure, compile and install PHP binary -->
         <exec dir="${c-build.dir}/php" executable="sh">
             <!-- <env key="CC" value="${php.cc}"/> -->
-            <arg line="configure ${php.configure}"/>
+            <arg line="configure ${php.configure} --with-libdir=${php.configure.libdir}"/>
         </exec>
     </target>
 
@@ -238,7 +238,9 @@
     <!-- Makes the PHP source for the PHP build runtime                       -->
     <!-- ==================================================================== -->
     <target name="make" description="Compiles the php runtime environment.">
-        <exec dir="${c-build.dir}/php" executable="make"/>
+        <exec dir="${c-build.dir}/php" executable="make">
+        	<arg line="-j6"/>
+    	</exec>
     </target>
     
     <!-- ==================================================================== -->
@@ -249,8 +251,13 @@
         <antcall target="deploy"/>
         <antcall target="configure"/>
         <antcall target="make"/>
+    	<chmod perm="+x">
+            <fileset dir="${c-build.dir}/php-${php.version}/scripts">
+                <include name="**/*"/>
+            </fileset>
+        </chmod>
     </target>
-    
+	
     <!-- ==================================================================== -->
     <!-- Creates a pecl package                                               -->
     <!-- ==================================================================== -->
