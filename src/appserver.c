@@ -171,6 +171,9 @@ static void php_appserver_shutdown_globals (zend_appserver_globals *appserver_gl
 
 static void php_appserver_init_globals(zend_appserver_globals *appserver_globals)
 {
+    /* Reset phpinfo output to be non text */
+    sapi_module.phpinfo_as_text = 0;
+
     /* Override header generation in SAPI */
     if (sapi_module.header_handler != appserver_header_handler) {
         appserver_orig_header_handler = sapi_module.header_handler;
