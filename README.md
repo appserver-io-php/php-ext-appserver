@@ -2,7 +2,7 @@
 
 This is a PHP extension for the [appserver.io](http://appserver.io) project.
 
-The extension replaces some PHP system functions like get_headers() with 
+The extension replaces some PHP system functions like get_headers() 
 with appserver_get_headers() because they lead to serious problems when 
 running a daemon like appserver.io that provides functionality like a web 
 server. 
