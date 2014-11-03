@@ -49,6 +49,9 @@ xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0 http://pear.php.net/dtd/ta
         <file name="tests/appserver_010.phpt" role="test"/>
         <file name="tests/appserver_011.phpt" role="test"/>
         <file name="tests/appserver_012.phpt" role="test"/>
+        <file name="tests/appserver_013.phpt" role="test"/>
+        <file name="tests/appserver_014.phpt" role="test"/>
+        <file name="tests/appserver_015.phpt" role="test"/>
     </dir>
 </contents>
 <dependencies>
