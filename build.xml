@@ -140,7 +140,7 @@
     <!-- Get PECL pthreads source package by given version number             -->
     <!-- ==================================================================== -->
     <target name="get-pthreads-src" depends="check-pthreads-src-present" unless="${pthreads-src.present}" description="Get PECL pthreads source package by given version number">
-        <get src="http://pecl.php.net/get/pthreads-${pthreads.version}.tgz" dest="/tmp/pthreads-${pthreads.version}.tgz"/>
+        <get src="https://github.com/appserver-io-php/pthreads/archive/v${pthreads.version}.tar.gz" dest="/tmp/pthreads-${pthreads.version}.tgz"/>
     </target>
 
     <!-- ==================================================================== -->
@@ -265,6 +265,7 @@
                 <include name="**/*"/>
             </fileset>
         </chmod>
+    	<antcall target="make-install" />
     </target>
     
     <!-- ==================================================================== -->
