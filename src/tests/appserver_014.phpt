@@ -11,10 +11,10 @@ if (!$streamClient) {
 }
 $streamConnection = stream_socket_accept($streamServer);
 
-var_dump(appserver_stream_import_file_descriptor($streamServer));
-var_dump(appserver_stream_import_file_descriptor($streamClient));
-var_dump(appserver_stream_import_file_descriptor($streamConnection));
+var_dump((appserver_stream_import_file_descriptor($streamServer) > 0));
+var_dump((appserver_stream_import_file_descriptor($streamClient) > 0));
+var_dump((appserver_stream_import_file_descriptor($streamConnection) > 0));
 --EXPECT--
-int(3)
-int(4)
-int(5)
+bool(true)
+bool(true)
+bool(true)
