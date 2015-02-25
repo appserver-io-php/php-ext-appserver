@@ -4,6 +4,7 @@ php:
   - 5.6
 
 script:
+  - cd src
   - phpize
   - ./configure
   - make
