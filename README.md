@@ -18,6 +18,13 @@ This setting reset's the default PHP_SAPI to given value
 appserver.php_sapi = appserver
 ```
 
+#####appserver.phpinfo_as_text
+This setting defines the output format for phpinfo() to be either text or html.
+
+```
+appserver.phpinfo_as_text = 1
+```
+
 #####appserver.remove_functions
 This setting hold's a comma separated list of all function to remove on runtime startup. If you want to define your own custom core php function for strlen and headers_sent in userland just use:
 
