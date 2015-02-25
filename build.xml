@@ -230,6 +230,7 @@
         <!-- configure, compile and install PHP binary -->
         <exec dir="${c-build.dir}/php" executable="sh">
             <!-- <env key="CC" value="${php.cc}"/> -->
+        	<env key="CFLAGS" value="-ggdb3" />
             <arg line="configure ${php.configure} --with-libdir=${php.configure.libdir}"/>
         </exec>
     </target>
@@ -255,7 +256,7 @@
     <!-- ==================================================================== -->
     <!-- Inits the build source for PHP                                       -->
     <!-- ==================================================================== -->
-    <target name="init-build" description="Init the php build environment.">
+    <target name="init-build" depends="prepare" description="Init the php build environment.">
         <antcall target="prepare-source"/>
         <antcall target="deploy"/>
         <antcall target="configure"/>

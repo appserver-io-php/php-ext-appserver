@@ -79,6 +79,7 @@ zend_module_entry appserver_module_entry = {
 
 PHP_INI_BEGIN()
 PHP_INI_ENTRY("appserver.php_sapi", "", PHP_INI_ALL, NULL)
+PHP_INI_ENTRY("appserver.phpinfo_as_text", "1", PHP_INI_ALL, NULL)
 PHP_INI_ENTRY("appserver.remove_functions", "", PHP_INI_ALL, NULL)
 PHP_INI_ENTRY("appserver.remove_constants", "", PHP_INI_ALL, NULL)
 PHP_INI_END()
@@ -171,9 +172,6 @@ static void php_appserver_shutdown_globals (zend_appserver_globals *appserver_gl
 
 static void php_appserver_init_globals(zend_appserver_globals *appserver_globals)
 {
-    /* Reset phpinfo output to be non text */
-    sapi_module.phpinfo_as_text = 0;
-
     /* Override header generation in SAPI */
     if (sapi_module.header_handler != appserver_header_handler) {
         appserver_orig_header_handler = sapi_module.header_handler;
@@ -206,6 +204,9 @@ PHP_MSHUTDOWN_FUNCTION(appserver)
 PHP_MINIT_FUNCTION(appserver)
 {
     REGISTER_INI_ENTRIES();
+
+    /* Reset phpinfo output to be non text if defined in ini settings */
+    sapi_module.phpinfo_as_text = INI_INT("appserver.phpinfo_as_text");
 
 	/* init globals */
     ZEND_INIT_MODULE_GLOBALS(appserver, php_appserver_init_globals, NULL);
@@ -263,7 +264,7 @@ PHP_RSHUTDOWN_FUNCTION(appserver)
 PHP_MINFO_FUNCTION(appserver)
 {
 	php_info_print_table_start();
-    php_info_print_table_header(2, "appserver support", "enabled");
+    php_info_print_table_header(2, "appserver.io support", "enabled");
     php_info_print_table_row(2, "Version", APPSERVER_VERSION);
     php_info_print_table_end();
 
@@ -539,20 +540,20 @@ ZEND_DLEXPORT void appserver_zend_shutdown(zend_extension *extension)
 ZEND_EXTENSION();
 
 ZEND_DLEXPORT zend_extension zend_extension_entry = {
-    "Application Server (appserver)",
+    "appserver.io (appserver)",
     APPSERVER_VERSION,
     "TechDivision GmbH",
     "http://appserver.io/",
     "",
     appserver_zend_startup,
     appserver_zend_shutdown,
-    NULL,              // activate_func_t
+    NULL,              	// activate_func_t
     NULL,               // deactivate_func_t
     NULL,               // message_handler_func_t
     NULL,               // op_array_handler_func_t
-    onStatement,     // statement_handler_func_t
-    NULL,           // fcall_begin_handler_func_t
-    NULL,           // fcall_end_handler_func_t
+    onStatement,     	// statement_handler_func_t
+    NULL,           	// fcall_begin_handler_func_t
+    NULL,           	// fcall_end_handler_func_t
     NULL,               // op_array_ctor_func_t
     NULL,               // op_array_dtor_func_t
     NULL,               // api_no_check
