@@ -1,5 +1,7 @@
 # php-ext-appserver
 
+[![Build Status](https://img.shields.io/travis/appserver-io-php/php-ext-appserver/master.svg?style=flat-square)](http://travis-ci.org/appserver-io-php/php-ext-appserver)
+
 This is a PHP extension for the [appserver.io](http://appserver.io) project.
 
 The extension replaces some PHP system functions like get_headers() 
