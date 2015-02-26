@@ -1,5 +1,5 @@
 --TEST--
-appserver: call phpinfo and check if is in text format
+appserver: call phpinfo and check if is in non text format
 --CREDITS--
 Johann Zelger <jz [at] techdivision [dot] com>
 --INI--
