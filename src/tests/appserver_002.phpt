@@ -3,10 +3,11 @@ appserver: remove more functions by ini setting
 --CREDITS--
 Johann Zelger <jz [at] techdivision [dot] com>
 --INI--
+opcache.enable=0
+opcache.enable_cli=0
 appserver.remove_functions=strlen,headers_sent
 --FILE--
 <?php
-
 function strlen($string) {
 	return "custom_" . __FUNCTION__ . ":" . $string;
 }

@@ -4,9 +4,10 @@ appserver: remove exactly one function by ini setting
 Johann Zelger <jz [at] techdivision [dot] com>
 --INI--
 appserver.remove_functions=strlen
+opcache.enable=0
+opcache.enable_cli=0
 --FILE--
 <?php
-
 function strlen() {
 	return "custom_" . __FUNCTION__;
 }
