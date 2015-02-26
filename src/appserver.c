@@ -205,8 +205,10 @@ PHP_MINIT_FUNCTION(appserver)
 {
     REGISTER_INI_ENTRIES();
 
-    /* Reset phpinfo output to be non text if defined in ini settings */
-    sapi_module.phpinfo_as_text = INI_INT("appserver.phpinfo_as_text");
+    /* Reset phpinfo output to be non text if defined in ini settings for sapi cli only */
+    if (strcmp(sapi_module.name, "cli") == 0) {
+    	sapi_module.phpinfo_as_text = INI_INT("appserver.phpinfo_as_text");
+    }
 
 	/* init globals */
     ZEND_INIT_MODULE_GLOBALS(appserver, php_appserver_init_globals, NULL);
